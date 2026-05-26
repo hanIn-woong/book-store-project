@@ -270,56 +270,51 @@ git status
 book-store-project/
 │
 ├── src/main/java/com/bookstore/
-│   ├── domain/                    # 각 도메인 폴더
-│   │   ├── member/                # Member 담당자 작업 영역
-│   │   │   ├── controller/
-│   │   │   ├── model/
-│   │   │   └── service/
-│   │   │
-│   │   ├── content/               # Content List 담당자 작업 영역
-│   │   │   ├── controller/
-│   │   │   ├── model/
-│   │   │   └── service/
-│   │   │
-│   │   ├── detail/                # Detail 담당자 작업 영역
-│   │   │   ├── controller/
-│   │   │   ├── model/
-│   │   │   └── service/
-│   │   │
-│   │   └── admin/                 # Admin 담당자 작업 영역
-│   │       ├── controller/
-│   │       ├── model/
-│   │       ├── service/
-│   │       └── repository/
+│   ├── domain/                    # 각 담당자별 독립적인 기능 개발 영역 (Git 충돌 방지)
+│   │   ├── member/                # 1번 회원 도메인 담당자 영역 (로그인, 회원가입, 마이페이지)
+│   │   │   └── controller/        # 회원 관련 HTTP 요청 처리
+│   │   ├── content/               # 2번 콘텐츠 목록 담당자 영역 (메인화면, 검색, 필터링)
+│   │   │   └── controller/        # 도서 목록 및 검색 요청 처리
+│   │   ├── detail/                # 3번 상세 도메인 담당자 영역 (도서 상세조회, 예외처리)
+│   │   │   └── controller/        # @PathVariable 기반 상세조회 처리
+│   │   └── admin/                 # 4번 관리자 도메인 담당자 영역
+│   │       ├── controller/        # 도서 등록/수정/삭제 관리자 페이지 컨트롤러
+│   │       └── service/           # 도서 데이터 생성·변경(CUD) 비즈니스 로직
 │   │
-│   ├── common/                    # 공유 코드 (모두가 사용)
-│   │   ├── database/              # 공유 DB 클래스
-│   │   ├── dto/                   # 공유 DTO
-│   │   └── exception/             # 공유 예외 처리
+│   ├── common/                    # 전역에서 공유하여 사용하는 공통 인프라 영역
+│   │   ├── database/              # [BookDatabase.java] 싱글톤 구조의 공통 ArrayList 저장소
+│   │   ├── model/                 # [Book.java, Member.java] 모든 조원이 공유하는 핵심 데이터 엔티티
+│   │   ├── dto/                   # [공유 DTO] 계층간 데이터 이동을 위한 공통 객체
+│   │   ├── exception/             # [공유 예외] 상세조회 실패(NPE) 등 전역 예외 처리 클래스
+│   │   ├── util/                  # [유틸리티] 공통 데이터 포맷터(금액 콤마 표시, 날짜 변환 등)
+│   │   └── config/                # [Spring 설정] 타임리프, 인터셉터, 혹은 인코딩 관련 스프링 부트 설정
 │   │
-│   └── BookStoreApplication.java
+│   └── BookStoreApplication.java  # 애플리케이션 실행 메인 클래스
 │
 ├── src/main/resources/
-│   ├── templates/                 # HTML 파일 (타임리프)
-│   │   ├── member/
-│   │   ├── content/
-│   │   ├── detail/
-│   │   └── admin/
+│   ├── templates/                 # 타임리프(Thymeleaf) HTML 화면 영역
+│   │   ├── common/                # [layout, header, footer] 4번 담당자가 제공하는 공통 레이아웃 프래그먼트
+│   │   ├── member/                # 로그인, 가입 화면 (Form 바인딩 th:object 적용)
+│   │   ├── content/               # 도서 목록 및 검색 결과 화면 (th:each 반복문 적용)
+│   │   ├── detail/                # 도서 상세 정보 화면
+│   │   └── admin/                 # 도서 등록/수정 폼 및 통계 대시보드 화면 (Loop status 활용)
 │   │
-│   ├── static/                    # CSS, JavaScript, 이미지
-│   │   ├── css/
-│   │   ├── js/
-│   │   └── images/
+│   ├── static/                    # 브라우저가 직접 읽는 정적 자원 영역 (Thymeleaf @{}로 링크)
+│   │   ├── css/                   # 전역 공통 및 도메인별 스타일시트
+│   │   ├── js/                    # 프론트엔드 제어용 자바스크립트 파일
+│   │   └── images/                # 도서 표지, 별점(star.png) 등 이미지 자원
 │   │
-│   └── application.properties     # Spring Boot 설정
+│   └── application.properties     # 애플리케이션 포트, 업로드 경로 등 Spring 환경 설정 파일
 │
-├── TEAM_GUIDE.md                  # 이 문서
-├── README.md
-├── .gitignore
-└── build.gradle                        # Gradle 설정
+├── TEAM_GUIDE.md                  # 조원들이 지켜야 할 패키지 import 및 깃허브 규칙 가이드 문서
+├── README.md                      # 프로젝트 소개 메인 페이지
+├── .gitignore                     # IntelliJ 및 Gradle 빌드 파일 제외 설정 파일
+└── build.gradle                   # 프로젝트 빌드 및 Lombok 라이브러리 의존성 관리 파일
 ```
 
-**각자의 도메인 폴더에서만 작업하세요!**
+**핵심 엔티티(Book, Member)를 사용할 때는 common.model 패키지에서 import해서 사용할 것**
+**자신이 담당한 domain/역할/controller 패키지 내부에서 화면을 반환할 때, 
+반드시 return "member/login"; 처럼 본인 도메인 폴더 경로를 명시하기**
 
 ---
 
