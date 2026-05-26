@@ -313,6 +313,7 @@ book-store-project/
 ```
 
 **핵심 엔티티(Book, Member)를 사용할 때는 common.model 패키지에서 import해서 사용할 것**
+
 **자신이 담당한 domain/역할/controller 패키지 내부에서 화면을 반환할 때, 
 반드시 return "member/login"; 처럼 본인 도메인 폴더 경로를 명시하기**
 
