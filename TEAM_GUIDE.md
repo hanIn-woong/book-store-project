@@ -340,23 +340,7 @@ book-store-project/
 
 ---
 
-## 💬 소통 방법
 
-### 질문이 있을 때:
-1. **Admin(관리자)에게 Slack/카톡으로 물어보기**
-2. **GitHub Issues에 질문 올리기**
-   - Repository → Issues → New Issue
-   - 문제 설명 + 코드 스니펫 첨부
-
-### 코드 검토 요청:
-- Pull Request 생성 후 Admin이 검토
-- Comment에서 피드백 받기
-
-### 병합 충돌 발생 시:
-- **절대 혼자 해결하려 하지 말 것**
-- Admin에게 즉시 알리기
-
----
 
 ## 🎓 Git 명령어 치트시트
 
