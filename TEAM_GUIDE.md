@@ -1,3 +1,19 @@
+<<<<<<< HEAD
+# TEAM GUIDE
+
+## 1. Package Import Rules
+- Use `com.bookstore` as the base package.
+- Respect domain boundaries:
+    - `member`: Login, Signup, MyPage
+    - `content`: Main list, Search, Filtering
+    - `detail`: Book detail, Exception handling
+    - `admin`: Registration, Edit, Delete, Statistics
+
+## 2. GitHub Rules
+- Do not commit local configuration files.
+- Ensure all tests pass before pushing.
+- Use meaningful commit messages.
+=======
 # 📚 Book Store Project - 팀 협업 가이드
 
 > Spring Boot 기반 도서 구매 사이트 팀 프로젝트
@@ -471,3 +487,4 @@ git commit -m "임시 저장"
 **Happy Coding! 🚀**
 
 마지막 수정: 2026년 5월 26일
+>>>>>>> bfc6de1195d6f1431a57651cd1ae63f4bd76f3d6
