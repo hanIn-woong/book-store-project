@@ -155,7 +155,9 @@
 <body>
     <nav class="site-nav">
         <a th:href="@{/}">홈</a>
-        <a th:href="@{/member/id-input}">아이디 입력</a>
+        <a th:if="${loginUserId == null}" th:href="@{/member/id-input}">아이디 입력</a>
+        <a th:if="${loginUserId != null}" th:href="@{/member/mypage}">마이페이지</a>
+        <a th:if="${loginUserId != null}" th:href="@{/member/logout}">로그아웃</a>
     </nav>
     <main class="auth-page">
         <section class="brand-area">
