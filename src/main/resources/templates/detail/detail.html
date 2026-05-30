@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${book.title}">도서 상세</title>
+</head>
+<body>
+
+<h1 th:text="${book.title}">책 제목</h1>
+
+<img th:src="${book.imageUrl}" alt="책 이미지" width="200">
+
+<p>
+    <strong>지은이:</strong>
+    <span th:text="${book.author}">저자명</span>
+</p>
+
+<p>
+    <strong>카테고리:</strong>
+    <span th:text="${book.category}">카테고리</span>
+</p>
+
+<p>
+    <strong>가격:</strong>
+    <span th:text="${book.price} + '원'">0원</span>
+</p>
+
+<p>
+    <strong>책 소개:</strong>
+</p>
+<p th:text="${book.description}">
+    책 소개 내용
+</p>
+
+<button type="button">장바구니 담기</button>
+<button type="button">구매하기</button>
+
+<br><br>
+
+<a href="/books">목록으로 돌아가기</a>
+
+</body>
+</html>
