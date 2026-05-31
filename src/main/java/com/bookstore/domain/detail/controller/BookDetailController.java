@@ -1,23 +1,23 @@
 package com.bookstore.domain.detail.controller;
 
-import com.bookstore.common.database.BookRepository;
+import com.bookstore.common.database.BookDatabase;
 import com.bookstore.common.model.Book;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
-@RequiredArgsConstructor
 public class BookDetailController {
 
-    private final BookRepository bookRepository;
+    private final BookDatabase bookDatabase = BookDatabase.getInstance();
 
-    @GetMapping("/books/{id}")
-    public String detail(@PathVariable Long id, Model model) {
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("없는 도서입니다. id=" + id));
+    @GetMapping("/books/{bookId}")
+    public String detail(@PathVariable String bookId, Model model) {
+        Book book = bookDatabase.getBooks().stream()
+                .filter(item -> item.getBookId().equals(bookId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("없는 도서입니다. id=" + bookId));
 
         model.addAttribute("book", book);
 

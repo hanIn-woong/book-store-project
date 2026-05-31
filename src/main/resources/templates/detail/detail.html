@@ -2,17 +2,25 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${book.title}">도서 상세</title>
+    <title th:text="${book.name}">도서 상세</title>
 </head>
 <body>
 
-<h1 th:text="${book.title}">책 제목</h1>
+<h1 th:text="${book.name}">책 제목</h1>
 
-<img th:src="${book.imageUrl}" alt="책 이미지" width="200">
+<p>
+    <strong>도서 ID:</strong>
+    <span th:text="${book.bookId}">P0000</span>
+</p>
 
 <p>
     <strong>지은이:</strong>
     <span th:text="${book.author}">저자명</span>
+</p>
+
+<p>
+    <strong>출판사:</strong>
+    <span th:text="${book.publisher}">출판사</span>
 </p>
 
 <p>
@@ -22,7 +30,22 @@
 
 <p>
     <strong>가격:</strong>
-    <span th:text="${book.price} + '원'">0원</span>
+    <span th:text="${book.unitPrice} + '원'">0원</span>
+</p>
+
+<p>
+    <strong>재고:</strong>
+    <span th:text="${book.unitsInStock}">0</span>
+</p>
+
+<p>
+    <strong>출간일:</strong>
+    <span th:text="${book.releaseDate}">출간일</span>
+</p>
+
+<p>
+    <strong>상태:</strong>
+    <span th:text="${book.condition}">상태</span>
 </p>
 
 <p>
@@ -37,7 +60,7 @@
 
 <br><br>
 
-<a href="/books">목록으로 돌아가기</a>
+<a href="/">목록으로 돌아가기</a>
 
 </body>
 </html>
