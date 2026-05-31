@@ -12,6 +12,7 @@
             <thead class="table-dark">
             <tr>
                 <th>도서ID</th>
+                <th>이미지</th>
                 <th>도서명</th>
                 <th>가격</th>
                 <th>저자</th>
@@ -24,6 +25,10 @@
             <tbody>
             <tr th:each="book : ${books}">
                 <td th:text="${book.bookId}">P1234</td>
+                <td>
+                    <img th:if="${book.imageUrl != null and book.imageUrl != ''}" th:src="${book.imageUrl}" alt="Book Image" style="width: 50px; height: auto;">
+                    <span th:unless="${book.imageUrl != null and book.imageUrl != ''}" class="text-muted">No Image</span>
+                </td>
                 <td th:text="${book.name}">도서명</td>
                 <td th:text="${#numbers.formatDecimal(book.unitPrice, 0, 'COMMA', 0, 'POINT')} + '원'">15,000원</td>
                 <td th:text="${book.author}">저자</td>
