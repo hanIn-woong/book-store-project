@@ -18,4 +18,5 @@ public class Book {
     private long unitsInStock;
     private String releaseDate;
     private String condition; // New, Old, Refurbished
+    private String imageUrl;
 }
