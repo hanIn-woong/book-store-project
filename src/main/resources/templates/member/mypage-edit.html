@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지 수정</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, "Malgun Gothic", sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .auth-page {
+            display: grid;
+            grid-template-columns: 1fr 430px;
+            min-height: 100vh;
+        }
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+            text-align: center;
+            background: #ffffff;
+        }
+
+        .brand-logo {
+            margin: 0;
+            font-size: 72px;
+            font-weight: 800;
+            letter-spacing: 0;
+            color: #26324a;
+        }
+
+        .brand-subtitle {
+            margin: 12px 0 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: #5c667a;
+        }
+
+        .form-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: #eef2f7;
+            border-left: 1px solid #dde4ee;
+        }
+
+        .form-panel {
+            width: 100%;
+            max-width: 340px;
+        }
+
+        h1 {
+            margin: 0 0 24px;
+            font-size: 28px;
+            color: #111827;
+        }
+
+        .error {
+            margin: 0 0 16px;
+            color: #d32f2f;
+            font-weight: 600;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 14px;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        input {
+            width: 100%;
+            height: 44px;
+            margin-top: 6px;
+            padding: 0 12px;
+            border: 1px solid #c8d1de;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        input:disabled {
+            background: #e5e9f0;
+            color: #5c667a;
+        }
+
+        button,
+        .button-link {
+            display: block;
+            width: 100%;
+            height: 46px;
+            margin-top: 12px;
+            border: 0;
+            border-radius: 6px;
+            background: #26324a;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 46px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .button-link {
+            background: #5c667a;
+        }
+
+        .site-nav {
+            position: fixed;
+            top: 20px;
+            left: 24px;
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .site-nav a {
+            color: #26324a;
+            text-decoration: none;
+        }
+
+        @media (max-width: 760px) {
+            .auth-page {
+                grid-template-columns: 1fr;
+            }
+
+            .brand-area {
+                min-height: 28vh;
+                padding: 32px 24px;
+            }
+
+            .brand-logo {
+                font-size: 48px;
+            }
+
+            .brand-subtitle {
+                font-size: 19px;
+            }
+
+            .form-area {
+                align-items: flex-start;
+                border-left: 0;
+                border-top: 1px solid #dde4ee;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="site-nav">
+        <a th:href="@{/}">홈</a>
+        <a th:if="${loginUserId == null}" th:href="@{/member/id-input}">아이디 입력</a>
+        <a th:if="${loginUserId == null}" th:href="@{/member/signup}">회원가입</a>
+        <a th:if="${loginUserId != null}" th:href="@{/member/mypage}">마이페이지</a>
+        <a th:if="${loginUserId != null}" th:href="@{/member/logout}">로그아웃</a>
+    </nav>
+
+    <main class="auth-page">
+        <section class="brand-area">
+            <div>
+                <p class="brand-logo">BookFrame</p>
+                <p class="brand-subtitle">도서 구매 사이트</p>
+            </div>
+        </section>
+
+        <section class="form-area">
+            <div class="form-panel">
+                <h1>마이페이지 수정</h1>
+                <p class="error" th:if="${error}" th:text="${error}"></p>
+                <form th:action="@{/member/mypage/edit}" th:object="${memberDto}" method="post">
+                    <input type="hidden" th:field="*{userId}">
+                    <label>
+                        아이디
+                        <input type="text" th:value="${memberDto.userId}" disabled>
+                    </label>
+                    <label>
+                        이름
+                        <input type="text" th:field="*{name}" required>
+                    </label>
+                    <label>
+                        이메일
+                        <input type="email" th:field="*{email}" required>
+                    </label>
+                    <label>
+                        새 비밀번호
+                        <input type="password" th:field="*{password}">
+                    </label>
+                    <label>
+                        새 비밀번호 확인
+                        <input type="password" th:field="*{passwordConfirm}">
+                    </label>
+                    <button type="submit">수정하기</button>
+                    <a class="button-link" th:href="@{/member/mypage}">취소</a>
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
