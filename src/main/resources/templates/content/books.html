@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{common/layout :: layout(~{::section})}">
+<body>
+<section>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">도서 목록
+            <small class="text-muted fs-6 ms-2"
+                   th:text="'총 ' + ${#lists.size(books)} + '권'">총 0권</small>
+        </h2>
+    </div>
+
+    <div class="row g-4">
+        <div th:each="book : ${books}" class="col-lg-3 col-md-4 col-sm-6">
+            <div th:replace="~{content/fragments/bookCard :: bookCard(${book})}"></div>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>
