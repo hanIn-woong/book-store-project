@@ -10,6 +10,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public String handleIllegalArgumentException(IllegalArgumentException e, Model model) {
         model.addAttribute("message", e.getMessage());
-        return "detail/error";
+        return "common/error";
     }
 }
