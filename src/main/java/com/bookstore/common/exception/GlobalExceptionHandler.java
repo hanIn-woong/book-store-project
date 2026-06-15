@@ -12,4 +12,10 @@ public class GlobalExceptionHandler {
         model.addAttribute("message", e.getMessage());
         return "common/error";
     }
+
+    @ExceptionHandler(BookNotFoundException.class)
+    public String handleBookNotFoundException(BookNotFoundException e, Model model) {
+        model.addAttribute("message", e.getMessage());
+        return "common/error";
+    }
 }
