@@ -1,6 +1,7 @@
 package com.bookstore.domain.admin.service;
 
 import com.bookstore.common.database.BookDatabase;
+import com.bookstore.common.exception.BookNotFoundException;
 import com.bookstore.common.model.Book;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class AdminService {
         return database.getBooks().stream()
                 .filter(book -> book.getBookId().equals(bookId))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new BookNotFoundException(bookId));
     }
 
     public void addBook(Book book) {
