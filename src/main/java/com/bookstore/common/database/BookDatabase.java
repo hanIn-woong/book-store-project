@@ -2,6 +2,7 @@ package com.bookstore.common.database;
 
 import com.bookstore.common.model.Book;
 import com.bookstore.common.model.Purchase;
+import com.bookstore.common.model.CartItem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
@@ -11,12 +12,15 @@ public class BookDatabase {
     private static BookDatabase instance;
     private List<Book> books;
     private List<Purchase> purchaseList;
+    private List<CartItem> cartList;
     private long purchaseSequence = 0;
+    private long cartSequence = 0;
     private String baseUrl = "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/";
 
     private BookDatabase() {
         books = new ArrayList<>();
         purchaseList = new ArrayList<>();
+        cartList = new ArrayList<>();
         initializeData();
     }
 
@@ -79,5 +83,23 @@ public class BookDatabase {
         purchaseSequence++;
         purchase.setPurchaseId("PUR" + String.format("%05d", purchaseSequence));
         purchaseList.add(purchase);
+    }
+
+    public List<CartItem> getCartList() {
+        return cartList;
+    }
+
+    public void addCartItem(CartItem cartItem) {
+        cartSequence++;
+        cartItem.setCartId("CRT" + String.format("%05d", cartSequence));
+        cartList.add(cartItem);
+    }
+
+    public void deleteCartItem(String cartId) {
+        cartList.removeIf(item -> item.getCartId().equals(cartId));
+    }
+
+    public void clearCart(String userId) {
+        cartList.removeIf(item -> item.getUserId().equals(userId));
     }
 }
