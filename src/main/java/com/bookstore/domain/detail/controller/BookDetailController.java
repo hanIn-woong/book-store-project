@@ -1,6 +1,7 @@
 package com.bookstore.domain.detail.controller;
 
 import com.bookstore.common.database.BookDatabase;
+import com.bookstore.common.exception.BookNotFoundException;
 import com.bookstore.common.model.Book;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +18,9 @@ public class BookDetailController {
         Book book = bookDatabase.getBooks().stream()
                 .filter(item -> item.getBookId().equals(bookId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("없는 도서입니다. id=" + bookId));
+                .orElseThrow(() -> new BookNotFoundException(bookId));
+
+        book.setViewCount(book.getViewCount() + 1);
 
         model.addAttribute("book", book);
 

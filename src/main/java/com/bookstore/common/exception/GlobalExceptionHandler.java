@@ -10,6 +10,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public String handleIllegalArgumentException(IllegalArgumentException e, Model model) {
         model.addAttribute("message", e.getMessage());
-        return "detail/error";
+        return "common/error";
     }
+
+    @ExceptionHandler(BookNotFoundException.class)
+    public String handleBookNotFoundException(BookNotFoundException e, Model model) {
+        model.addAttribute("message", e.getMessage());
+        return "common/error";
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.bookstore.domain.admin.controller;
 
+import com.bookstore.common.dto.BookDto;
 import com.bookstore.common.model.Book;
 import com.bookstore.domain.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,17 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final AdminService adminService;
+    
+    @GetMapping({"", "/dashboard"})
+    public String dashboard(Model model) {
+        model.addAttribute("totalBooks", adminService.getAllBooks().size());
+        model.addAttribute("totalStock", adminService.getTotalStock());
+        model.addAttribute("outOfStockCount", adminService.getOutOfStockCount());
+        model.addAttribute("lowStockBooks", adminService.getLowStockBooks());
+        model.addAttribute("bestSellers", adminService.getBestSellers());
+        model.addAttribute("categoryStats", adminService.getCategoryDistribution());
+        return "admin/dashboard";
 
-    @GetMapping
-    public String adminHome() {
-        return "redirect:/admin/books";
     }
 
     @GetMapping("/books")
@@ -27,13 +35,13 @@ public class AdminController {
 
     @GetMapping("/add")
     public String addForm(Model model) {
-        model.addAttribute("book", new Book());
+        model.addAttribute("book", new BookDto());
         return "admin/addBook";
     }
 
     @PostMapping("/add")
-    public String addBook(@ModelAttribute Book book) {
-        adminService.addBook(book);
+    public String addBook(@ModelAttribute BookDto bookDto) {
+        adminService.addBook(bookDto);
         return "redirect:/admin/books";
     }
 
@@ -44,12 +52,12 @@ public class AdminController {
     }
 
     @PostMapping("/update")
-    public String updateBook(@ModelAttribute Book book) {
-        adminService.updateBook(book);
+    public String updateBook(@ModelAttribute BookDto bookDto) {
+        adminService.updateBook(bookDto);
         return "redirect:/admin/books";
     }
 
-    @GetMapping("/delete/{bookId}")
+    @PostMapping("/delete/{bookId}")
     public String deleteBook(@PathVariable String bookId) {
         adminService.deleteBook(bookId);
         return "redirect:/admin/books";
