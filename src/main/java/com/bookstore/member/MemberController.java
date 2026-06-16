@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/member")
@@ -45,15 +47,22 @@ public class MemberController {
     }
 
     @GetMapping("/id-input")
-    public String idInputForm(Model model) {
+    public String idInputForm(@RequestParam(required = false) String redirectUrl, Model model) {
         model.addAttribute("memberDto", new MemberDto());
+        model.addAttribute("redirectUrl", redirectUrl);
         return "member/id-input";
     }
 
     @PostMapping("/id-input")
-    public String idInput(@ModelAttribute MemberDto memberDto, Model model, HttpSession session) {
+    public String idInput(
+            @ModelAttribute MemberDto memberDto,
+            @RequestParam(required = false) String redirectUrl,
+            Model model,
+            HttpSession session
+    ) {
         Member member = memberService.login(memberDto.getUserId(), memberDto.getPassword()).orElse(null);
         if (member == null) {
+            model.addAttribute("redirectUrl", redirectUrl);
             model.addAttribute("error", "아이디 또는 비밀번호가 틀렸습니다.");
             return "member/id-input";
         }
@@ -63,6 +72,10 @@ public class MemberController {
 
         if ("ADMIN".equals(member.getRole())) {
             return "redirect:/admin";
+        }
+
+        if (isSafeRedirectUrl(redirectUrl)) {
+            return "redirect:" + redirectUrl;
         }
 
         return "redirect:/books";
@@ -77,7 +90,58 @@ public class MemberController {
         }
 
         model.addAttribute("member", memberService.findByUserId(userId).orElse(null));
+        List<?> purchases = memberService.findPurchasesByUserId(userId);
+        model.addAttribute("purchases", purchases);
+        model.addAttribute("recentPurchases", memberService.findRecentPurchaseItemsByUserId(userId));
+        model.addAttribute("hasMorePurchases", purchases.size() >= 3);
         return "member/mypage";
+    }
+
+    @GetMapping("/purchases")
+    public String purchases(Model model, HttpSession session) {
+        String userId = getLoginUserId(session);
+        if (userId == null) {
+            return "redirect:/member/id-input";
+        }
+
+        model.addAttribute("purchases", memberService.findPurchasesByUserId(userId));
+        return "member/purchases";
+    }
+
+    @GetMapping("/withdraw")
+    public String withdrawForm(Model model, HttpSession session) {
+        String userId = getLoginUserId(session);
+        if (userId == null) {
+            return "redirect:/member/id-input";
+        }
+
+        Member member = memberService.findByUserId(userId).orElse(null);
+        model.addAttribute("member", member);
+        if (member != null && "ADMIN".equals(member.getRole())) {
+            model.addAttribute("error", "관리자 계정은 탈퇴할 수 없습니다.");
+        }
+        if (member != null && "ADMIN".equals(member.getRole())) {
+            model.addAttribute("error", "관리자 계정은 탈퇴할 수 없습니다.");
+        }
+        return "member/withdraw";
+    }
+
+    @PostMapping("/withdraw")
+    public String withdraw(HttpSession session, Model model) {
+        String userId = getLoginUserId(session);
+        if (userId == null) {
+            return "redirect:/member/id-input";
+        }
+
+        if (!memberService.withdraw(userId)) {
+            model.addAttribute("member", memberService.findByUserId(userId).orElse(null));
+            model.addAttribute("error", "관리자 계정은 탈퇴할 수 없습니다.");
+            model.addAttribute("error", "관리자 계정은 탈퇴할 수 없습니다.");
+            return "member/withdraw";
+        }
+
+        session.invalidate();
+        return "redirect:/books";
     }
 
     @GetMapping("/mypage/edit")
@@ -126,5 +190,17 @@ public class MemberController {
 
         Object loginUserId = session.getAttribute("loginUserId");
         return loginUserId == null ? null : loginUserId.toString();
+    }
+
+    private String getLoginUserId(HttpSession session) {
+        Object loginUserId = session.getAttribute("loginUserId");
+        return loginUserId == null ? null : loginUserId.toString();
+    }
+
+    private boolean isSafeRedirectUrl(String redirectUrl) {
+        return redirectUrl != null
+                && redirectUrl.startsWith("/member/purchase/")
+                && !redirectUrl.contains("\r")
+                && !redirectUrl.contains("\n");
     }
 }

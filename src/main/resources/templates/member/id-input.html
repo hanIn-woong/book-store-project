@@ -172,6 +172,7 @@
                 <h1>아이디 입력</h1>
                 <p class="error" th:if="${error}" th:text="${error}"></p>
                 <form th:action="@{/member/id-input}" th:object="${memberDto}" method="post">
+                    <input type="hidden" name="redirectUrl" th:value="${redirectUrl}">
                     <label>
                         아이디
                         <input type="text" th:field="*{userId}" required>
