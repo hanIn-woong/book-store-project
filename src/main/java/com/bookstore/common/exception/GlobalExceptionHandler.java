@@ -18,4 +18,5 @@ public class GlobalExceptionHandler {
         model.addAttribute("message", e.getMessage());
         return "common/error";
     }
+
 }
