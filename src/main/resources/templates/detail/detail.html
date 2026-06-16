@@ -29,6 +29,7 @@
                     <p><strong>카테고리</strong><br><span th:text="${book.category}">카테고리</span></p>
                     <p><strong>출간일</strong><br><span th:text="${book.releaseDate}">출간일</span></p>
                     <p><strong>도서 ID</strong><br><span th:text="${book.bookId}">P0000</span></p>
+                    <p><strong>조회수</strong><br><span th:text="${book.viewCount} + '회'">0회</span></p>
                 </div>
                 <div class="col-md-6">
                     <p>
