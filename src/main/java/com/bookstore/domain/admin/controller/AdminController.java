@@ -18,6 +18,7 @@ public class AdminController {
     public String dashboard(Model model) {
         model.addAttribute("totalBooks", adminService.getAllBooks().size());
         model.addAttribute("totalStock", adminService.getTotalStock());
+        model.addAttribute("outOfStockCount", adminService.getOutOfStockCount());
         model.addAttribute("lowStockBooks", adminService.getLowStockBooks());
         model.addAttribute("bestSellers", adminService.getBestSellers());
         model.addAttribute("categoryStats", adminService.getCategoryDistribution());
