@@ -11,18 +11,21 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // 임시 테스트를 위해 보안 체크 비활성화
-        return true;
-        /*
         HttpSession session = request.getSession(false);
-        
-        // 세션이 없거나, 로그인한 사용자의 ID가 'admin'이 아닌 경우 로그인 페이지로 리다이렉트
-        if (session == null || !"admin".equals(session.getAttribute("loginUserId"))) {
+
+        // 1. 세션이 없거나 로그인 정보가 없는 경우 로그인 페이지로 리다이렉트
+        if (session == null || session.getAttribute("loginUserId") == null) {
             response.sendRedirect("/member/login");
             return false;
         }
-        
+
+        // 2. 관리자 권한(ADMIN)이 없는 경우 도서 목록(/books)으로 리다이렉트
+        String role = (String) session.getAttribute("loginRole");
+        if (!"ADMIN".equals(role)) {
+            response.sendRedirect("/books");
+            return false;
+        }
+
         return true;
-        */
     }
 }
