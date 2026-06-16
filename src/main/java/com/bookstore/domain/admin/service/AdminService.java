@@ -28,16 +28,10 @@ public class AdminService {
     }
 
     public void updateBook(Book updatedBook) {
-        List<Book> books = database.getBooks();
-        for (int i = 0; i < books.size(); i++) {
-            if (books.get(i).getBookId().equals(updatedBook.getBookId())) {
-                books.set(i, updatedBook);
-                return;
-            }
-        }
+        database.updateBook(updatedBook);
     }
 
     public void deleteBook(String bookId) {
-        database.getBooks().removeIf(book -> book.getBookId().equals(bookId));
+        database.deleteBook(bookId);
     }
 }
