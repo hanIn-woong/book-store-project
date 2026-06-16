@@ -21,8 +21,8 @@
             <span class="badge bg-danger"
                   th:if="${book.releaseDate != null and book.releaseDate != '' and !T(java.time.LocalDate).parse(book.releaseDate).isBefore(T(java.time.LocalDate).now().minusMonths(1))}">NEW</span>
             <span class="badge"
-                  th:classappend="${book.unitsInStock == 0} ? 'bg-danger' : (${book.unitsInStock <= 5} ? 'bg-warning text-dark' : 'bg-success')"
-                  th:text="${book.unitsInStock == 0} ? '품절' : (${book.unitsInStock <= 5} ? '재고 임박' : '재고 있음')">재고 있음</span>
+                  th:classappend="${book.unitsInStock == 0} ? 'bg-danger' : (${book.unitsInStock <= 3} ? 'bg-warning text-dark' : 'bg-success')"
+                  th:text="${book.unitsInStock == 0} ? '품절' : (${book.unitsInStock <= 3} ? '재고 임박' : '재고 있음')">재고 있음</span>
             <span class="badge bg-secondary"
                   th:if="${book.condition == '중고'}">중고</span>
         </div>
