@@ -1,6 +1,7 @@
 package com.bookstore.domain.admin.service;
 
 import com.bookstore.common.database.BookDatabase;
+import com.bookstore.common.dto.BookDto;
 import com.bookstore.common.exception.BookNotFoundException;
 import com.bookstore.common.model.Book;
 import org.springframework.stereotype.Service;
@@ -12,23 +13,31 @@ public class AdminService {
 
     private final BookDatabase database = BookDatabase.getInstance();
 
-    public List<Book> getAllBooks() {
-        return database.getBooks();
+    public List<BookDto> getAllBooks() {
+        return database.getBooks().stream()
+                .map(BookDto::from)
+                .toList();
     }
 
-    public Book getBookById(String bookId) {
-        return database.getBooks().stream()
-                .filter(book -> book.getBookId().equals(bookId))
+    public BookDto getBookById(String bookId) {
+        Book book = database.getBooks().stream()
+                .filter(b -> b.getBookId().equals(bookId))
                 .findFirst()
                 .orElseThrow(() -> new BookNotFoundException(bookId));
+        return BookDto.from(book);
     }
 
-    public void addBook(Book book) {
-        database.addBook(book);
+    public void addBook(BookDto bookDto) {
+        database.addBook(bookDto.toEntity());
     }
 
-    public void updateBook(Book updatedBook) {
-        Book existingBook = getBookById(updatedBook.getBookId());
+    public void updateBook(BookDto updatedBookDto) {
+        Book updatedBook = updatedBookDto.toEntity();
+        Book existingBook = database.getBooks().stream()
+                .filter(b -> b.getBookId().equals(updatedBook.getBookId()))
+                .findFirst()
+                .orElseThrow(() -> new BookNotFoundException(updatedBook.getBookId()));
+        
         // 기존 통계 데이터 보존
         updatedBook.setSalesCount(existingBook.getSalesCount());
         updatedBook.setViewCount(existingBook.getViewCount());
@@ -43,9 +52,10 @@ public class AdminService {
         return database.getBooks().stream().mapToLong(Book::getUnitsInStock).sum();
     }
 
-    public List<Book> getLowStockBooks() {
+    public List<BookDto> getLowStockBooks() {
         return database.getBooks().stream()
                 .filter(book -> book.getUnitsInStock() <= 3)
+                .map(BookDto::from)
                 .toList();
     }
 
@@ -55,10 +65,11 @@ public class AdminService {
                 .count();
     }
 
-    public List<Book> getBestSellers() {
+    public List<BookDto> getBestSellers() {
         return database.getBooks().stream()
                 .sorted((b1, b2) -> Long.compare(b2.getSalesCount(), b1.getSalesCount()))
                 .limit(5)
+                .map(BookDto::from)
                 .toList();
     }
 
@@ -71,7 +82,10 @@ public class AdminService {
      * 구매 처리 프로세스: 재고 차감, 판매량 증가, 구매 이력 저장
      */
     public void processPurchase(String userId, String bookId, int quantity) {
-        Book book = getBookById(bookId);
+        Book book = database.getBooks().stream()
+                .filter(b -> b.getBookId().equals(bookId))
+                .findFirst()
+                .orElseThrow(() -> new BookNotFoundException(bookId));
         
         // 1. 재고 차감
         if (book.getUnitsInStock() < quantity) {

@@ -1,5 +1,6 @@
 package com.bookstore.domain.admin.controller;
 
+import com.bookstore.common.dto.BookDto;
 import com.bookstore.common.model.Book;
 import com.bookstore.domain.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -33,13 +34,13 @@ public class AdminController {
 
     @GetMapping("/add")
     public String addForm(Model model) {
-        model.addAttribute("book", new Book());
+        model.addAttribute("book", new BookDto());
         return "admin/addBook";
     }
 
     @PostMapping("/add")
-    public String addBook(@ModelAttribute Book book) {
-        adminService.addBook(book);
+    public String addBook(@ModelAttribute BookDto bookDto) {
+        adminService.addBook(bookDto);
         return "redirect:/admin/books";
     }
 
@@ -50,8 +51,8 @@ public class AdminController {
     }
 
     @PostMapping("/update")
-    public String updateBook(@ModelAttribute Book book) {
-        adminService.updateBook(book);
+    public String updateBook(@ModelAttribute BookDto bookDto) {
+        adminService.updateBook(bookDto);
         return "redirect:/admin/books";
     }
 
