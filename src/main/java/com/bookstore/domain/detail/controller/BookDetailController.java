@@ -20,6 +20,8 @@ public class BookDetailController {
                 .findFirst()
                 .orElseThrow(() -> new BookNotFoundException(bookId));
 
+        book.setViewCount(book.getViewCount() + 1);
+
         model.addAttribute("book", book);
 
         return "detail/detail";
