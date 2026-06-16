@@ -49,6 +49,12 @@ public class AdminService {
                 .toList();
     }
 
+    public long getOutOfStockCount() {
+        return database.getBooks().stream()
+                .filter(book -> book.getUnitsInStock() == 0)
+                .count();
+    }
+
     public List<Book> getBestSellers() {
         return database.getBooks().stream()
                 .sorted((b1, b2) -> Long.compare(b2.getSalesCount(), b1.getSalesCount()))
@@ -59,5 +65,32 @@ public class AdminService {
     public java.util.Map<String, Long> getCategoryDistribution() {
         return database.getBooks().stream()
                 .collect(java.util.stream.Collectors.groupingBy(Book::getCategory, java.util.stream.Collectors.counting()));
+    }
+
+    /**
+     * 구매 처리 프로세스: 재고 차감, 판매량 증가, 구매 이력 저장
+     */
+    public void processPurchase(String userId, String bookId, int quantity) {
+        Book book = getBookById(bookId);
+        
+        // 1. 재고 차감
+        if (book.getUnitsInStock() < quantity) {
+            throw new RuntimeException("재고가 부족합니다.");
+        }
+        book.setUnitsInStock(book.getUnitsInStock() - quantity);
+        
+        // 2. 판매량 증가
+        book.setSalesCount(book.getSalesCount() + quantity);
+        
+        // 3. 구매 이력 저장
+        com.bookstore.common.model.Purchase purchase = com.bookstore.common.model.Purchase.builder()
+                .userId(userId)
+                .bookId(bookId)
+                .bookName(book.getName())
+                .unitPrice(book.getUnitPrice())
+                .purchaseDate(java.time.LocalDateTime.now())
+                .build();
+        
+        database.addPurchase(purchase);
     }
 }

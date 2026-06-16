@@ -34,10 +34,10 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card bg-info text-white h-100 shadow-sm">
+            <div class="card h-100 shadow-sm" th:classappend="${outOfStockCount > 0} ? 'bg-danger text-white' : 'bg-info text-white'">
                 <div class="card-body">
-                    <h6 class="card-title">카테고리 수</h6>
-                    <h2 class="display-6 mb-0" th:text="${categoryStats.size()}">8</h2>
+                    <h6 class="card-title">품절 도서 수</h6>
+                    <h2 class="display-6 mb-0" th:text="${outOfStockCount}">0</h2>
                 </div>
             </div>
         </div>

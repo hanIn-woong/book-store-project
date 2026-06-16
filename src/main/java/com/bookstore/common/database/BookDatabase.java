@@ -1,16 +1,20 @@
 package com.bookstore.common.database;
 
 import com.bookstore.common.model.Book;
+import com.bookstore.common.model.Purchase;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BookDatabase {
     private static BookDatabase instance;
     private List<Book> books;
+    private List<Purchase> purchaseList;
+    private long purchaseSequence = 0;
     private String baseUrl = "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/";
 
     private BookDatabase() {
         books = new ArrayList<>();
+        purchaseList = new ArrayList<>();
         initializeData();
     }
 
@@ -63,5 +67,15 @@ public class BookDatabase {
 
     public void deleteBook(String bookId) {
         books.removeIf(book -> book.getBookId().equals(bookId));
+    }
+
+    public List<Purchase> getPurchaseList() {
+        return purchaseList;
+    }
+
+    public void addPurchase(Purchase purchase) {
+        purchaseSequence++;
+        purchase.setPurchaseId("PUR" + String.format("%05d", purchaseSequence));
+        purchaseList.add(purchase);
     }
 }
