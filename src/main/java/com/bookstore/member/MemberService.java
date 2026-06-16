@@ -2,6 +2,7 @@ package com.bookstore.member;
 
 import com.bookstore.common.database.BookDatabase;
 import com.bookstore.common.model.Book;
+import com.bookstore.common.model.CartItem;
 import com.bookstore.common.model.Purchase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,18 @@ public class MemberService {
                 .filter(purchase -> purchase.getUserId().equals(userId))
                 .sorted(Comparator.comparing(Purchase::getPurchaseDate, Comparator.nullsLast(Comparator.reverseOrder())))
                 .toList();
+    }
+
+    public List<CartItem> findCartItemsByUserId(String userId) {
+        return bookDatabase.getCartList().stream()
+                .filter(cartItem -> cartItem.getUserId().equals(userId))
+                .toList();
+    }
+
+    public int calculateCartTotal(String userId) {
+        return findCartItemsByUserId(userId).stream()
+                .mapToInt(cartItem -> cartItem.getUnitPrice() * cartItem.getQuantity())
+                .sum();
     }
 
     public List<PurchaseHistoryItem> findRecentPurchaseItemsByUserId(String userId) {
