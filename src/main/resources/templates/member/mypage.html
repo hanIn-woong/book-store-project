@@ -186,6 +186,7 @@
         <aside class="side-card" th:if="${member}">
             <p class="nickname" th:text="${member.name != null ? member.name + '님' : member.userId + '님'}">닉네임님</p>
             <a class="side-button" th:href="@{/member/mypage/edit}">정보수정</a>
+            <a class="side-button" th:href="@{/member/cart}">장바구니</a>
             <a class="side-button logout-button" th:href="@{/member/logout}">로그아웃</a>
             <a class="side-button withdraw-button" th:href="@{/member/withdraw}">회원탈퇴</a>
         </aside>

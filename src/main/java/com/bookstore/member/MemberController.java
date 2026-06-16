@@ -108,6 +108,18 @@ public class MemberController {
         return "member/purchases";
     }
 
+    @GetMapping("/cart")
+    public String cart(Model model, HttpSession session) {
+        String userId = getLoginUserId(session);
+        if (userId == null) {
+            return "redirect:/member/id-input";
+        }
+
+        model.addAttribute("cartItems", memberService.findCartItemsByUserId(userId));
+        model.addAttribute("cartTotal", memberService.calculateCartTotal(userId));
+        return "member/cart";
+    }
+
     @GetMapping("/withdraw")
     public String withdrawForm(Model model, HttpSession session) {
         String userId = getLoginUserId(session);
