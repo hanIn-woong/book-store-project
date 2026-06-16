@@ -29,6 +29,10 @@ public class MemberRepository {
         findByUserId(userId).ifPresent(member -> member.setPassword(password));
     }
 
+    public void deleteByUserId(String userId) {
+        members.removeIf(member -> member.getUserId().equals(userId));
+    }
+
     public Optional<Member> findByUserId(String userId) {
         return members.stream()
                 .filter(member -> member.getUserId().equals(userId))

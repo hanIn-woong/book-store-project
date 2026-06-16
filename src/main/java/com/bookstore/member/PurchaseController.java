@@ -22,7 +22,7 @@ public class PurchaseController {
     public String startPurchase(@PathVariable String bookId, HttpSession session) {
         String loginUserId = getLoginUserId(session);
         if (loginUserId == null) {
-            return "redirect:/member/id-input";
+            return "redirect:/member/id-input?redirectUrl=/member/purchase/" + bookId + "/payment";
         }
 
         BookDto book = adminService.getBookById(bookId);
@@ -37,7 +37,7 @@ public class PurchaseController {
     public String paymentForm(@PathVariable String bookId, HttpSession session, Model model) {
         String loginUserId = getLoginUserId(session);
         if (loginUserId == null) {
-            return "redirect:/member/id-input";
+            return "redirect:/member/id-input?redirectUrl=/member/purchase/" + bookId + "/payment";
         }
 
         BookDto book = adminService.getBookById(bookId);
@@ -58,7 +58,7 @@ public class PurchaseController {
     ) {
         String loginUserId = getLoginUserId(session);
         if (loginUserId == null) {
-            return "redirect:/member/id-input";
+            return "redirect:/member/id-input?redirectUrl=/member/purchase/" + bookId + "/payment";
         }
 
         BookDto book = adminService.getBookById(bookId);

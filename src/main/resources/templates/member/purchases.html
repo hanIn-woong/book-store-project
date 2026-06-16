@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::section})}">
+<body>
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">&#51204;&#52404; &#44396;&#47588; &#45236;&#50669;</h2>
+        <a th:href="@{/member/mypage}" class="btn btn-outline-secondary">&#47560;&#51060;&#54168;&#51060;&#51648;</a>
+    </div>
+
+    <div class="alert alert-info" th:if="${#lists.isEmpty(purchases)}">
+        &#44396;&#47588; &#45236;&#50669;&#51060; &#50630;&#49845;&#45768;&#45796;.
+    </div>
+
+    <div class="table-responsive" th:unless="${#lists.isEmpty(purchases)}">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>&#46020;&#49436;&#47749;</th>
+                <th>&#44032;&#44201;</th>
+                <th>&#44396;&#47588;&#51068;&#49884;</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="purchase : ${purchases}">
+                <td th:text="${purchase.bookName}">&#46020;&#49436;&#47749;</td>
+                <td th:text="${#numbers.formatDecimal(purchase.unitPrice, 0, 'COMMA', 0, 'POINT')} + '&#50896;'">0&#50896;</td>
+                <td th:text="${#temporals.format(purchase.purchaseDate, 'yyyy-MM-dd HH:mm')}">2026-01-01 12:00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <!--
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">전체 구매 내역</h2>
+        <a th:href="@{/member/mypage}" class="btn btn-outline-secondary">마이페이지</a>
+    </div>
+
+    <div class="alert alert-info" th:if="${#lists.isEmpty(purchases)}">
+        구매 내역이 없습니다.
+    </div>
+
+    <div class="table-responsive" th:unless="${#lists.isEmpty(purchases)}">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>도서명</th>
+                <th>가격</th>
+                <th>구매일시</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="purchase : ${purchases}">
+                <td th:text="${purchase.bookName}">도서명</td>
+                <td th:text="${#numbers.formatDecimal(purchase.unitPrice, 0, 'COMMA', 0, 'POINT')} + '원'">0원</td>
+                <td th:text="${#temporals.format(purchase.purchaseDate, 'yyyy-MM-dd HH:mm')}">2026-01-01 12:00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    -->
+</section>
+</body>
+</html>

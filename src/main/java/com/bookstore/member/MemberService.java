@@ -1,14 +1,21 @@
 package com.bookstore.member;
 
+import com.bookstore.common.database.BookDatabase;
+import com.bookstore.common.model.Book;
+import com.bookstore.common.model.Purchase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final BookDatabase bookDatabase = BookDatabase.getInstance();
 
     public boolean signup(MemberDto memberDto) {
         if (memberRepository.existsByUserId(memberDto.getUserId())) {
@@ -42,6 +49,49 @@ public class MemberService {
 
     public Optional<Member> findByUserId(String userId) {
         return memberRepository.findByUserId(userId);
+    }
+
+    public List<Purchase> findPurchasesByUserId(String userId) {
+        return bookDatabase.getPurchaseList().stream()
+                .filter(purchase -> purchase.getUserId().equals(userId))
+                .sorted(Comparator.comparing(Purchase::getPurchaseDate, Comparator.nullsLast(Comparator.reverseOrder())))
+                .toList();
+    }
+
+    public List<PurchaseHistoryItem> findRecentPurchaseItemsByUserId(String userId) {
+        return findPurchasesByUserId(userId).stream()
+                .sorted(Comparator.comparing(Purchase::getPurchaseDate, Comparator.nullsLast(Comparator.reverseOrder())))
+                .limit(3)
+                .map(this::toPurchaseHistoryItem)
+                .toList();
+    }
+
+    private PurchaseHistoryItem toPurchaseHistoryItem(Purchase purchase) {
+        String imageUrl = bookDatabase.getBooks().stream()
+                .filter(book -> book.getBookId().equals(purchase.getBookId()))
+                .findFirst()
+                .map(Book::getImageUrl)
+                .orElse(null);
+
+        return new PurchaseHistoryItem(
+                purchase.getBookName(),
+                purchase.getUnitPrice(),
+                purchase.getPurchaseDate(),
+                imageUrl
+        );
+    }
+
+    public record PurchaseHistoryItem(String bookName, int unitPrice, LocalDateTime purchaseDate, String imageUrl) {
+    }
+
+    public boolean withdraw(String userId) {
+        Optional<Member> member = memberRepository.findByUserId(userId);
+        if (member.isEmpty() || "ADMIN".equals(member.get().getRole())) {
+            return false;
+        }
+
+        memberRepository.deleteByUserId(userId);
+        return true;
     }
 
     public void updateProfile(MemberDto memberDto) {
