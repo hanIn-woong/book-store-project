@@ -51,4 +51,17 @@ public class BookDatabase {
     public void addBook(Book book) {
         books.add(book);
     }
+
+    public void updateBook(Book updatedBook) {
+        for (int i = 0; i < books.size(); i++) {
+            if (books.get(i).getBookId().equals(updatedBook.getBookId())) {
+                books.set(i, updatedBook);
+                return;
+            }
+        }
+    }
+
+    public void deleteBook(String bookId) {
+        books.removeIf(book -> book.getBookId().equals(bookId));
+    }
 }

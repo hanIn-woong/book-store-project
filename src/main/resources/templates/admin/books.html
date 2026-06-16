@@ -38,9 +38,9 @@
                 <td>
                     <div class="btn-group btn-group-sm">
                         <a th:href="@{/admin/edit/{id}(id=${book.bookId})}" class="btn btn-outline-warning">수정</a>
-                        <a th:href="@{/admin/delete/{id}(id=${book.bookId})}" 
-                           class="btn btn-outline-danger" 
-                           onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
+                        <form th:action="@{/admin/delete/{id}(id=${book.bookId})}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-outline-danger" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                        </form>
                     </div>
                 </td>
             </tr>
