@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final AdminService adminService;
-    
+
     @GetMapping({"", "/dashboard"})
     public String dashboard(Model model) {
         model.addAttribute("totalBooks", adminService.getAllBooks().size());

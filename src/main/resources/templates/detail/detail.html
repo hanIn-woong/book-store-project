@@ -10,10 +10,15 @@
 
     <div class="card shadow-sm">
         <div class="card-body p-4">
+            <div class="alert alert-success" th:if="${param.purchaseSuccess != null}">
+                구매가 완료되었습니다.
+            </div>
+            <div class="alert alert-danger" th:if="${param.purchaseError != null}">
+                구매를 진행할 수 없습니다. 재고를 확인해 주세요.
+            </div>
 
             <div class="d-flex align-items-center gap-2 mb-2">
                 <h2 class="fw-bold mb-0" th:text="${book.name}">책 제목</h2>
-                <!-- condition 배지 -->
                 <span th:if="${book.condition != null}"
                       th:text="${book.condition}"
                       th:class="${book.condition == '신규'} ? 'badge bg-success' : (${book.condition == '중고'} ? 'badge bg-warning text-dark' : 'badge bg-secondary')">
@@ -63,11 +68,13 @@
                         th:disabled="${book.unitsInStock == 0}">
                     장바구니 담기
                 </button>
-                <button type="button" class="btn btn-primary"
-                        th:disabled="${book.unitsInStock == 0}">
-                    <span th:if="${book.unitsInStock > 0}">구매하기</span>
-                    <span th:if="${book.unitsInStock == 0}">품절</span>
-                </button>
+                <form th:action="@{/member/purchase/{bookId}/start(bookId=${book.bookId})}" method="post">
+                    <button type="submit" class="btn btn-primary"
+                            th:disabled="${book.unitsInStock == 0}">
+                        <span th:if="${book.unitsInStock > 0}">구매하기</span>
+                        <span th:if="${book.unitsInStock == 0}">품절</span>
+                    </button>
+                </form>
             </div>
 
         </div>
