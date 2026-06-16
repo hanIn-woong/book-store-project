@@ -77,6 +77,22 @@ public class PurchaseController {
         return "redirect:/books/" + bookId + "?purchaseSuccess=true";
     }
 
+    @PostMapping("/member/cart/add/{bookId}")
+    public String addToCart(@PathVariable String bookId, HttpSession session) {
+        String loginUserId = getLoginUserId(session);
+        if (loginUserId == null) {
+            return "redirect:/member/id-input?redirectUrl=/books/" + bookId;
+        }
+
+        try {
+            adminService.addToCart(loginUserId, bookId, PURCHASE_QUANTITY);
+        } catch (RuntimeException e) {
+            return "redirect:/books/" + bookId + "?cartError=true";
+        }
+
+        return "redirect:/books/" + bookId + "?cartSuccess=true";
+    }
+
     private String getLoginUserId(HttpSession session) {
         Object loginUserId = session.getAttribute("loginUserId");
         return loginUserId == null ? null : loginUserId.toString();
