@@ -14,6 +14,11 @@ public class AdminController {
 
     private final AdminService adminService;
 
+    @GetMapping
+    public String adminHome() {
+        return "redirect:/admin/books";
+    }
+
     @GetMapping("/books")
     public String bookList(Model model) {
         model.addAttribute("books", adminService.getAllBooks());

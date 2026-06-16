@@ -10,6 +10,10 @@ import java.util.Optional;
 public class MemberRepository {
     private final List<Member> members = new ArrayList<>();
 
+    public MemberRepository() {
+        members.add(new Member("admin", "admin", "관리자", "admin@bookstore.com", "ADMIN"));
+    }
+
     public void save(Member member) {
         members.add(member);
     }
