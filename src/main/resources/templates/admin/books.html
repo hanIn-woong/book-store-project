@@ -4,7 +4,10 @@
 <section>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>도서 관리 목록</h2>
-        <a th:href="@{/admin/add}" class="btn btn-primary">새 도서 등록</a>
+        <div>
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline-info me-2">대시보드 보기</a>
+            <a th:href="@{/admin/add}" class="btn btn-primary">새 도서 등록</a>
+        </div>
     </div>
 
     <div class="table-responsive">
