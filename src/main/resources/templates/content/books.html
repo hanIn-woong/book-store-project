@@ -34,6 +34,7 @@
                 <th>도서명</th>
                 <th>저자</th>
                 <th>분류</th>
+                <th>배지</th>
                 <th>재고</th>
                 <th>가격</th>
                 <th style="width: 110px;">상세</th>
@@ -55,6 +56,17 @@
                 </td>
                 <td class="text-muted" th:text="${book.author}">저자</td>
                 <td><span class="badge bg-secondary" th:text="${book.category}">분류</span></td>
+                <td>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-danger"
+                              th:if="${book.releaseDate != null and book.releaseDate != '' and !T(java.time.LocalDate).parse(book.releaseDate).isBefore(T(java.time.LocalDate).now().minusMonths(1))}">NEW</span>
+                        <span class="badge"
+                              th:classappend="${book.unitsInStock == 0} ? 'bg-danger' : (${book.unitsInStock <= 5} ? 'bg-warning text-dark' : 'bg-success')"
+                              th:text="${book.unitsInStock == 0} ? '품절' : (${book.unitsInStock <= 5} ? '재고 임박' : '재고 있음')">재고 있음</span>
+                        <span class="badge bg-secondary"
+                              th:if="${book.condition == '중고'}">중고</span>
+                    </div>
+                </td>
                 <td th:text="${book.unitsInStock} + '권'">0권</td>
                 <td class="fw-bold text-primary"
                     th:text="${#numbers.formatDecimal(book.unitPrice, 0, 'COMMA', 0, 'POINT')} + '원'">0원</td>
