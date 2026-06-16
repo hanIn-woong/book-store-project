@@ -9,12 +9,62 @@
             <small class="text-muted fs-6 ms-2"
                    th:text="'총 ' + ${#lists.size(books)} + '권'">총 0권</small>
         </h2>
+
+        <div class="btn-group" role="group" aria-label="도서 목록 보기 방식">
+            <a th:href="@{/books(view='grid')}"
+               class="btn btn-sm"
+               th:classappend="${view == 'grid'} ? 'btn-dark' : 'btn-outline-dark'">그리드</a>
+            <a th:href="@{/books(view='list')}"
+               class="btn btn-sm"
+               th:classappend="${view == 'list'} ? 'btn-dark' : 'btn-outline-dark'">리스트</a>
+        </div>
     </div>
 
-    <div class="row g-4">
+    <div th:if="${view == 'grid'}" class="row g-4">
         <div th:each="book : ${books}" class="col-lg-3 col-md-4 col-sm-6">
             <div th:replace="~{content/fragments/bookCard :: bookCard(${book})}"></div>
         </div>
+    </div>
+
+    <div th:if="${view == 'list'}" class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+            <tr>
+                <th style="width: 90px;">이미지</th>
+                <th>도서명</th>
+                <th>저자</th>
+                <th>분류</th>
+                <th>재고</th>
+                <th>가격</th>
+                <th style="width: 110px;">상세</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book : ${books}">
+                <td>
+                    <img th:if="${book.imageUrl != null and book.imageUrl != ''}"
+                         th:src="${book.imageUrl}"
+                         th:alt="${book.name}"
+                         style="width: 48px; height: 64px; object-fit: contain;">
+                    <span th:unless="${book.imageUrl != null and book.imageUrl != ''}"
+                          class="text-muted small">No Image</span>
+                </td>
+                <td>
+                    <div class="fw-semibold" th:text="${book.name}">도서명</div>
+                    <small class="text-muted" th:text="${book.publisher}">출판사</small>
+                </td>
+                <td class="text-muted" th:text="${book.author}">저자</td>
+                <td><span class="badge bg-secondary" th:text="${book.category}">분류</span></td>
+                <td th:text="${book.unitsInStock} + '권'">0권</td>
+                <td class="fw-bold text-primary"
+                    th:text="${#numbers.formatDecimal(book.unitPrice, 0, 'COMMA', 0, 'POINT')} + '원'">0원</td>
+                <td>
+                    <a th:href="@{/books/{id}(id=${book.bookId})}"
+                       class="btn btn-outline-dark btn-sm">상세보기</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
 </section>
