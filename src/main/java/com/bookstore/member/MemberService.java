@@ -19,7 +19,8 @@ public class MemberService {
                 memberDto.getUserId(),
                 memberDto.getPassword(),
                 memberDto.getName(),
-                memberDto.getEmail()
+                memberDto.getEmail(),
+                "USER"
         );
         memberRepository.save(member);
         return true;

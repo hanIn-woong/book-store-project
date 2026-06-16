@@ -24,6 +24,7 @@ public class AdminController {
         model.addAttribute("bestSellers", adminService.getBestSellers());
         model.addAttribute("categoryStats", adminService.getCategoryDistribution());
         return "admin/dashboard";
+
     }
 
     @GetMapping("/books")

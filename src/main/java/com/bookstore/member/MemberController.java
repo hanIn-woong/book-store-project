@@ -52,13 +52,20 @@ public class MemberController {
 
     @PostMapping("/id-input")
     public String idInput(@ModelAttribute MemberDto memberDto, Model model, HttpSession session) {
-        if (memberService.login(memberDto.getUserId(), memberDto.getPassword()).isEmpty()) {
+        Member member = memberService.login(memberDto.getUserId(), memberDto.getPassword()).orElse(null);
+        if (member == null) {
             model.addAttribute("error", "아이디 또는 비밀번호가 틀렸습니다.");
             return "member/id-input";
         }
 
-        session.setAttribute("loginUserId", memberDto.getUserId());
-        return "redirect:/member/mypage";
+        session.setAttribute("loginUserId", member.getUserId());
+        session.setAttribute("loginRole", member.getRole());
+
+        if ("ADMIN".equals(member.getRole())) {
+            return "redirect:/admin";
+        }
+
+        return "redirect:/books";
     }
 
     @GetMapping("/mypage")

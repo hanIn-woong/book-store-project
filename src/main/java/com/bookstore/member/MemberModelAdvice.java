@@ -11,5 +11,6 @@ public class MemberModelAdvice {
     @ModelAttribute
     public void addLoginMember(Model model, HttpSession session) {
         model.addAttribute("loginUserId", session.getAttribute("loginUserId"));
+        model.addAttribute("loginRole", session.getAttribute("loginRole"));
     }
 }
