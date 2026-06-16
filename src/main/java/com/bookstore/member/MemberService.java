@@ -71,6 +71,10 @@ public class MemberService {
                 .sum();
     }
 
+    public void clearCart(String userId) {
+        bookDatabase.clearCart(userId);
+    }
+
     public List<PurchaseHistoryItem> findRecentPurchaseItemsByUserId(String userId) {
         return findPurchasesByUserId(userId).stream()
                 .sorted(Comparator.comparing(Purchase::getPurchaseDate, Comparator.nullsLast(Comparator.reverseOrder())))

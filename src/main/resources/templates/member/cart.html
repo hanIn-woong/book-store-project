@@ -149,6 +149,26 @@
             font-weight: 900;
             cursor: default;
         }
+        .buy-button:not(:disabled) {
+            cursor: pointer;
+        }
+        .buy-button:disabled {
+            opacity: .55;
+        }
+        .cart-alert {
+            margin: 0 0 18px;
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-weight: 800;
+        }
+        .cart-alert.success {
+            background: #ecfdf5;
+            color: #047857;
+        }
+        .cart-alert.error {
+            background: #fff1f2;
+            color: #be123c;
+        }
         .empty-message {
             padding: 90px 20px;
             color: #64748b;
@@ -182,6 +202,13 @@
 
 <main class="cart-page">
     <h2 class="page-title">&#51109;&#48148;&#44396;&#45768;</h2>
+
+    <div class="cart-alert success" th:if="${param.cartSuccess != null}">
+        &#51109;&#48148;&#44396;&#45768; &#49345;&#54408; &#44396;&#47588;&#44032; &#50756;&#47308;&#46104;&#50632;&#49845;&#45768;&#45796;.
+    </div>
+    <div class="cart-alert error" th:if="${param.cartError != null}">
+        &#51109;&#48148;&#44396;&#45768; &#44396;&#47588;&#47484; &#51652;&#54665;&#54624; &#49688; &#50630;&#49845;&#45768;&#45796;. &#51116;&#44256;&#47484; &#54869;&#51064;&#54644; &#51452;&#49464;&#50836;.
+    </div>
 
     <div class="cart-layout">
         <section class="cart-list">
@@ -219,7 +246,13 @@
                 <strong class="summary-total"
                         th:text="${#numbers.formatDecimal(cartTotal, 0, 'COMMA', 0, 'POINT')} + '&#50896;'">0&#50896;</strong>
             </div>
-            <button type="button" class="buy-button">&#44396;&#47588;&#54616;&#44592;</button>
+            <form th:action="@{/member/cart/purchase}" method="post">
+                <button type="submit"
+                        class="buy-button"
+                        th:disabled="${#lists.isEmpty(cartItems)}">
+                    &#44396;&#47588;&#54616;&#44592;
+                </button>
+            </form>
         </aside>
     </div>
 </main>
