@@ -1,5 +1,7 @@
 package com.bookstore.member;
 
+import com.bookstore.common.model.CartItem;
+import com.bookstore.domain.admin.service.AdminService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+    private final AdminService adminService;
 
     @GetMapping("/signup")
     public String signupForm(Model model) {
@@ -118,6 +121,36 @@ public class MemberController {
         model.addAttribute("cartItems", memberService.findCartItemsByUserId(userId));
         model.addAttribute("cartTotal", memberService.calculateCartTotal(userId));
         return "member/cart";
+    }
+
+    @PostMapping("/cart/purchase")
+    public String purchaseCart(HttpSession session) {
+        String userId = getLoginUserId(session);
+        if (userId == null) {
+            return "redirect:/member/id-input";
+        }
+
+        List<CartItem> cartItems = memberService.findCartItemsByUserId(userId);
+        if (cartItems.isEmpty()) {
+            return "redirect:/member/cart?cartError=empty";
+        }
+
+        boolean allAvailable = cartItems.stream()
+                .allMatch(item -> adminService.isStockAvailable(item.getBookId(), item.getQuantity()));
+        if (!allAvailable) {
+            return "redirect:/member/cart?cartError=outOfStock";
+        }
+
+        try {
+            for (CartItem item : cartItems) {
+                adminService.processPurchase(userId, item.getBookId(), item.getQuantity());
+            }
+            memberService.clearCart(userId);
+        } catch (RuntimeException e) {
+            return "redirect:/member/cart?cartError=outOfStock";
+        }
+
+        return "redirect:/member/cart?cartSuccess=true";
     }
 
     @GetMapping("/withdraw")
