@@ -17,6 +17,13 @@
                 구매를 진행할 수 없습니다. 재고를 확인해 주세요.
             </div>
 
+            <div class="row mb-4">
+                <div class="col-md-3 text-center">
+                    <img th:src="${book.imageUrl}" th:alt="${book.name}"
+                         class="img-fluid rounded shadow-sm" style="max-height: 250px;">
+                </div>
+                <div class="col-md-9">
+
             <div class="d-flex align-items-center gap-2 mb-2">
                 <h2 class="fw-bold mb-0" th:text="${book.name}">책 제목</h2>
                 <span th:if="${book.condition != null}"
@@ -85,6 +92,9 @@
                     </button>
                 </form>
             </div>
+
+                </div><!-- col-md-9 끝 -->
+            </div><!-- row 끝 -->
 
         </div>
     </div>
