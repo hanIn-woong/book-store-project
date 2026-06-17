@@ -1,6 +1,7 @@
 package com.bookstore.member;
 
 import com.bookstore.common.dto.BookDto;
+import com.bookstore.common.util.SessionUtils;
 import com.bookstore.domain.admin.service.AdminService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class PurchaseController {
 
     @PostMapping("/member/purchase/{bookId}/start")
     public String startPurchase(@PathVariable String bookId, HttpSession session) {
-        String loginUserId = getLoginUserId(session);
+        String loginUserId = SessionUtils.getLoginUserId(session);
         if (loginUserId == null) {
             return "redirect:/member/id-input?redirectUrl=/member/purchase/" + bookId + "/payment";
         }
@@ -35,7 +36,7 @@ public class PurchaseController {
 
     @GetMapping("/member/purchase/{bookId}/payment")
     public String paymentForm(@PathVariable String bookId, HttpSession session, Model model) {
-        String loginUserId = getLoginUserId(session);
+        String loginUserId = SessionUtils.getLoginUserId(session);
         if (loginUserId == null) {
             return "redirect:/member/id-input?redirectUrl=/member/purchase/" + bookId + "/payment";
         }
@@ -56,7 +57,7 @@ public class PurchaseController {
             HttpSession session,
             Model model
     ) {
-        String loginUserId = getLoginUserId(session);
+        String loginUserId = SessionUtils.getLoginUserId(session);
         if (loginUserId == null) {
             return "redirect:/member/id-input?redirectUrl=/member/purchase/" + bookId + "/payment";
         }
@@ -79,7 +80,7 @@ public class PurchaseController {
 
     @PostMapping("/member/cart/add/{bookId}")
     public String addToCart(@PathVariable String bookId, HttpSession session) {
-        String loginUserId = getLoginUserId(session);
+        String loginUserId = SessionUtils.getLoginUserId(session);
         if (loginUserId == null) {
             return "redirect:/member/id-input?redirectUrl=/books/" + bookId;
         }
@@ -93,9 +94,37 @@ public class PurchaseController {
         return "redirect:/books/" + bookId + "?cartSuccess=true";
     }
 
-    private String getLoginUserId(HttpSession session) {
-        Object loginUserId = session.getAttribute("loginUserId");
-        return loginUserId == null ? null : loginUserId.toString();
+    @PostMapping("/member/cart/update/{cartId}")
+    public String updateCartItem(@PathVariable String cartId,
+                                 @RequestParam int quantity,
+                                 HttpSession session) {
+        String loginUserId = SessionUtils.getLoginUserId(session);
+        if (loginUserId == null) {
+            return "redirect:/member/id-input";
+        }
+
+        if (quantity < 1) {
+            return "redirect:/member/cart";
+        }
+
+        try {
+            adminService.updateCartItemQuantity(cartId, quantity);
+        } catch (RuntimeException e) {
+            return "redirect:/member/cart?cartError=outOfStock";
+        }
+
+        return "redirect:/member/cart";
+    }
+
+    @PostMapping("/member/cart/delete/{cartId}")
+    public String deleteCartItem(@PathVariable String cartId, HttpSession session) {
+        String loginUserId = SessionUtils.getLoginUserId(session);
+        if (loginUserId == null) {
+            return "redirect:/member/id-input";
+        }
+
+        adminService.deleteCartItem(cartId);
+        return "redirect:/member/cart";
     }
 
     private boolean isValidPaymentMethod(String paymentMethod) {

@@ -1,6 +1,7 @@
 package com.bookstore.member;
 
 import com.bookstore.common.model.CartItem;
+import com.bookstore.common.util.SessionUtils;
 import com.bookstore.domain.admin.service.AdminService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -102,7 +103,7 @@ public class MemberController {
 
     @GetMapping("/purchases")
     public String purchases(Model model, HttpSession session) {
-        String userId = getLoginUserId(session);
+        String userId = SessionUtils.getLoginUserId(session);
         if (userId == null) {
             return "redirect:/member/id-input";
         }
@@ -113,7 +114,7 @@ public class MemberController {
 
     @GetMapping("/cart")
     public String cart(Model model, HttpSession session) {
-        String userId = getLoginUserId(session);
+        String userId = SessionUtils.getLoginUserId(session);
         if (userId == null) {
             return "redirect:/member/id-input";
         }
@@ -125,7 +126,7 @@ public class MemberController {
 
     @PostMapping("/cart/purchase")
     public String purchaseCart(HttpSession session) {
-        String userId = getLoginUserId(session);
+        String userId = SessionUtils.getLoginUserId(session);
         if (userId == null) {
             return "redirect:/member/id-input";
         }
@@ -155,7 +156,7 @@ public class MemberController {
 
     @GetMapping("/withdraw")
     public String withdrawForm(Model model, HttpSession session) {
-        String userId = getLoginUserId(session);
+        String userId = SessionUtils.getLoginUserId(session);
         if (userId == null) {
             return "redirect:/member/id-input";
         }
@@ -165,22 +166,18 @@ public class MemberController {
         if (member != null && "ADMIN".equals(member.getRole())) {
             model.addAttribute("error", "관리자 계정은 탈퇴할 수 없습니다.");
         }
-        if (member != null && "ADMIN".equals(member.getRole())) {
-            model.addAttribute("error", "관리자 계정은 탈퇴할 수 없습니다.");
-        }
         return "member/withdraw";
     }
 
     @PostMapping("/withdraw")
     public String withdraw(HttpSession session, Model model) {
-        String userId = getLoginUserId(session);
+        String userId = SessionUtils.getLoginUserId(session);
         if (userId == null) {
             return "redirect:/member/id-input";
         }
 
         if (!memberService.withdraw(userId)) {
             model.addAttribute("member", memberService.findByUserId(userId).orElse(null));
-            model.addAttribute("error", "관리자 계정은 탈퇴할 수 없습니다.");
             model.addAttribute("error", "관리자 계정은 탈퇴할 수 없습니다.");
             return "member/withdraw";
         }
@@ -233,11 +230,6 @@ public class MemberController {
             return userId;
         }
 
-        Object loginUserId = session.getAttribute("loginUserId");
-        return loginUserId == null ? null : loginUserId.toString();
-    }
-
-    private String getLoginUserId(HttpSession session) {
         Object loginUserId = session.getAttribute("loginUserId");
         return loginUserId == null ? null : loginUserId.toString();
     }

@@ -5,6 +5,7 @@ import com.bookstore.common.dto.BookDto;
 import com.bookstore.common.exception.BookNotFoundException;
 import com.bookstore.common.model.Book;
 import com.bookstore.common.model.CartItem;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,9 +13,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AdminService {
 
-    private final BookDatabase database = BookDatabase.getInstance();
+    private final BookDatabase database;
 
     public List<BookDto> getAllBooks() {
         return database.getBooks().stream()
@@ -40,7 +42,7 @@ public class AdminService {
                 .filter(b -> b.getBookId().equals(updatedBook.getBookId()))
                 .findFirst()
                 .orElseThrow(() -> new BookNotFoundException(updatedBook.getBookId()));
-        
+
         // 기존 통계 데이터 보존
         updatedBook.setSalesCount(existingBook.getSalesCount());
         updatedBook.setViewCount(existingBook.getViewCount());
@@ -89,25 +91,25 @@ public class AdminService {
                 .filter(b -> b.getBookId().equals(bookId))
                 .findFirst()
                 .orElseThrow(() -> new BookNotFoundException(bookId));
-        
+
         // 1. 재고 차감
         if (book.getUnitsInStock() < quantity) {
             throw new RuntimeException("재고가 부족합니다.");
         }
         book.setUnitsInStock(book.getUnitsInStock() - quantity);
-        
+
         // 2. 판매량 증가
         book.setSalesCount(book.getSalesCount() + quantity);
-        
+
         // 3. 구매 이력 저장
         com.bookstore.common.model.Purchase purchase = com.bookstore.common.model.Purchase.builder()
                 .userId(userId)
                 .bookId(bookId)
                 .bookName(book.getName())
                 .unitPrice(book.getUnitPrice())
-                .purchaseDate(java.time.LocalDateTime.now())
+                .purchaseDate(LocalDateTime.now())
                 .build();
-        
+
         database.addPurchase(purchase);
     }
 
@@ -182,5 +184,9 @@ public class AdminService {
                 .findFirst()
                 .map(book -> book.getUnitsInStock() >= requiredQuantity)
                 .orElse(false);
+    }
+
+    public void deleteCartItem(String cartId) {
+        database.deleteCartItem(cartId);
     }
 }

@@ -25,6 +25,7 @@ public class ContentController {
 
         model.addAttribute("books",      contentService.search(keyword, category, sort));
         model.addAttribute("categories", contentService.getCategories());
+        model.addAttribute("todayBook",  contentService.getTodayBook());
         model.addAttribute("view",       "list".equals(view) ? "list" : "grid");
         model.addAttribute("keyword",    keyword);
         model.addAttribute("category",   category);

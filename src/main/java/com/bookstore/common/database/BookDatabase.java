@@ -1,34 +1,28 @@
 package com.bookstore.common.database;
 
 import com.bookstore.common.model.Book;
-import com.bookstore.common.model.Purchase;
 import com.bookstore.common.model.CartItem;
+import com.bookstore.common.model.Purchase;
+import com.bookstore.common.model.Rating;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Comparator;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
+@Component
 public class BookDatabase {
-    private static BookDatabase instance;
-    private List<Book> books;
-    private List<Purchase> purchaseList;
-    private List<CartItem> cartList;
+
+    private final List<Book> books = new ArrayList<>();
+    private final List<Purchase> purchaseList = new ArrayList<>();
+    private final List<CartItem> cartList = new ArrayList<>();
+    private final List<Rating> ratingList = new ArrayList<>();
     private long purchaseSequence = 0;
     private long cartSequence = 0;
-    private String baseUrl = "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/";
+    private final String baseUrl = "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/";
 
-    private BookDatabase() {
-        books = new ArrayList<>();
-        purchaseList = new ArrayList<>();
-        cartList = new ArrayList<>();
+    public BookDatabase() {
         initializeData();
-    }
-
-    public static synchronized BookDatabase getInstance() {
-        if (instance == null) {
-            instance = new BookDatabase();
-        }
-        return instance;
     }
 
     private void initializeData() {
@@ -54,6 +48,8 @@ public class BookDatabase {
         books.add(new Book("P1253", "생각에 관한 생각", 22000, "대니얼 카너먼", "심리학과 의사결정에 관한 책.", "김영사", "비소설", 105, "2018-03-30", "신규", baseUrl+"9788934981213.jpg", 55, 1100));
     }
 
+    // ── Book ──────────────────────────────────────────────
+
     public List<Book> getBooks() {
         return books;
     }
@@ -75,6 +71,8 @@ public class BookDatabase {
         books.removeIf(book -> book.getBookId().equals(bookId));
     }
 
+    // ── Purchase ──────────────────────────────────────────
+
     public List<Purchase> getPurchaseList() {
         return purchaseList;
     }
@@ -84,6 +82,8 @@ public class BookDatabase {
         purchase.setPurchaseId("PUR" + String.format("%05d", purchaseSequence));
         purchaseList.add(purchase);
     }
+
+    // ── Cart ──────────────────────────────────────────────
 
     public List<CartItem> getCartList() {
         return cartList;
@@ -101,5 +101,42 @@ public class BookDatabase {
 
     public void clearCart(String userId) {
         cartList.removeIf(item -> item.getUserId().equals(userId));
+    }
+
+    // ── Rating ────────────────────────────────────────────
+
+    public void addOrUpdateRating(String userId, String bookId, int score, String comment) {
+        ratingList.removeIf(r -> r.getUserId().equals(userId) && r.getBookId().equals(bookId));
+        ratingList.add(new Rating(userId, bookId, score, comment));
+    }
+
+    public List<Rating> getRatingsByBookId(String bookId) {
+        return ratingList.stream()
+                .filter(r -> r.getBookId().equals(bookId))
+                .toList();
+    }
+
+    public Optional<Rating> findRating(String userId, String bookId) {
+        return ratingList.stream()
+                .filter(r -> r.getUserId().equals(userId) && r.getBookId().equals(bookId))
+                .findFirst();
+    }
+
+    public double getAverageRating(String bookId) {
+        return ratingList.stream()
+                .filter(r -> r.getBookId().equals(bookId))
+                .mapToInt(Rating::getScore)
+                .average()
+                .orElse(0.0);
+    }
+
+    public long getRatingCount(String bookId) {
+        return ratingList.stream()
+                .filter(r -> r.getBookId().equals(bookId))
+                .count();
+    }
+
+    public void deleteRatingsByUserId(String userId) {
+        ratingList.removeIf(r -> r.getUserId().equals(userId));
     }
 }

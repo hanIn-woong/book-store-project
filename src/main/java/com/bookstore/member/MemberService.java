@@ -16,7 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final BookDatabase bookDatabase = BookDatabase.getInstance();
+    private final BookDatabase bookDatabase;
 
     public boolean signup(MemberDto memberDto) {
         if (memberRepository.existsByUserId(memberDto.getUserId())) {
@@ -108,7 +108,25 @@ public class MemberService {
         }
 
         memberRepository.deleteByUserId(userId);
+        bookDatabase.deleteRatingsByUserId(userId);
         return true;
+    }
+
+    public List<CartItem> findCartItemsByUserId(String userId) {
+        return bookDatabase.getCartList().stream()
+                .filter(item -> item.getUserId().equals(userId))
+                .toList();
+    }
+
+    public int calculateCartTotal(String userId) {
+        return bookDatabase.getCartList().stream()
+                .filter(item -> item.getUserId().equals(userId))
+                .mapToInt(item -> item.getUnitPrice() * item.getQuantity())
+                .sum();
+    }
+
+    public void clearCart(String userId) {
+        bookDatabase.clearCart(userId);
     }
 
     public void updateProfile(MemberDto memberDto) {

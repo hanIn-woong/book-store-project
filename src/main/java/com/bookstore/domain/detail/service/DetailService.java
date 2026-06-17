@@ -3,17 +3,20 @@ package com.bookstore.domain.detail.service;
 import com.bookstore.common.database.BookDatabase;
 import com.bookstore.common.dto.BookDto;
 import com.bookstore.common.model.Book;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class DetailService {
 
-    private final BookDatabase database = BookDatabase.getInstance();
+    private final BookDatabase database;
     private static final int PRICE_RANGE = 3000;
 
     public List<BookDto> getRelatedBooks(String bookId, int limit) {
@@ -66,5 +69,28 @@ public class DetailService {
             }
         }
         return null;
+    }
+
+    public void rateBook(String userId, String bookId, int score, String comment) {
+        if (score < 1 || score > 5) return;
+        database.addOrUpdateRating(userId, bookId, score, comment);
+    }
+
+    public List<com.bookstore.common.model.Rating> getReviews(String bookId) {
+        return database.getRatingsByBookId(bookId);
+    }
+
+    public int getUserRating(String userId, String bookId) {
+        return database.findRating(userId, bookId)
+                .map(com.bookstore.common.model.Rating::getScore)
+                .orElse(0);
+    }
+
+    public double getAverageRating(String bookId) {
+        return database.getAverageRating(bookId);
+    }
+
+    public long getRatingCount(String bookId) {
+        return database.getRatingCount(bookId);
     }
 }
