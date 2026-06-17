@@ -3,16 +3,19 @@ package com.bookstore.domain.content.service;
 import com.bookstore.common.database.BookDatabase;
 import com.bookstore.common.dto.BookDto;
 import com.bookstore.common.model.Book;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ContentService {
 
-    private final BookDatabase database = BookDatabase.getInstance();
+    private final BookDatabase database;
 
     public List<BookDto> search(String keyword, String category, String sort) {
         return database.getBooks().stream()
@@ -31,6 +34,16 @@ public class ContentService {
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
+    }
+
+    public BookDto getTodayBook() {
+        List<Book> topBooks = database.getBooks().stream()
+                .sorted(Comparator.comparingLong(Book::getSalesCount).reversed())
+                .limit(5)
+                .toList();
+        if (topBooks.isEmpty()) return null;
+        int index = (int)(LocalDate.now().toEpochDay() % topBooks.size());
+        return BookDto.from(topBooks.get(index));
     }
 
     private Comparator<Book> getComparator(String sort) {

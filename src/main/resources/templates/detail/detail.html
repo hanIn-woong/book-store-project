@@ -64,10 +64,12 @@
             </div>
 
             <div class="d-flex gap-2">
-                <button type="button" class="btn btn-outline-primary"
-                        th:disabled="${book.unitsInStock == 0}">
-                    장바구니 담기
-                </button>
+                <form th:action="@{/member/cart/add/{bookId}(bookId=${book.bookId})}" method="post">
+                    <button type="submit" class="btn btn-outline-primary"
+                            th:disabled="${book.unitsInStock == 0}">
+                        장바구니 담기
+                    </button>
+                </form>
                 <form th:action="@{/member/purchase/{bookId}/start(bookId=${book.bookId})}" method="post">
                     <button type="submit" class="btn btn-primary"
                             th:disabled="${book.unitsInStock == 0}">
@@ -77,6 +79,94 @@
                 </form>
             </div>
 
+        </div>
+    </div>
+
+    <!-- 평점 및 리뷰 -->
+    <div class="card shadow-sm mt-4">
+        <div class="card-header fw-bold">평점 및 리뷰</div>
+        <div class="card-body">
+            <!-- 평균 평점 -->
+            <div class="mb-3">
+                <span class="fs-4 fw-bold text-warning" th:text="${#numbers.formatDecimal(avgRating, 1, 1)}">0.0</span>
+                <span class="text-muted">/ 5.0</span>
+                <span class="text-muted ms-2" th:text="'(' + ${ratingCount} + '명 참여)'"></span>
+            </div>
+
+            <!-- 리뷰 작성 폼 -->
+            <div th:if="${loginUserId == null}" class="mb-3">
+                <a th:href="@{/member/id-input}" class="text-primary">로그인</a> 후 평점을 남길 수 있습니다.
+            </div>
+            <div th:if="${loginUserId != null}" class="mb-4">
+                <form th:action="@{/books/{bookId}/rate(bookId=${book.bookId})}" method="post">
+                    <div class="d-flex gap-2 mb-2">
+                        <div th:each="i : ${#numbers.sequence(1, 5)}" class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="score"
+                                   th:id="'star' + ${i}" th:value="${i}" th:checked="${userRating == i}">
+                            <label class="form-check-label" th:for="'star' + ${i}" th:text="${i} + '★'"></label>
+                        </div>
+                    </div>
+                    <textarea name="comment" class="form-control mb-2" rows="2"
+                              placeholder="코멘트를 남겨주세요. (선택)" maxlength="200"></textarea>
+                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                        <span th:if="${userRating == 0}">평점 남기기</span>
+                        <span th:if="${userRating != 0}">수정하기</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- 리뷰 목록 -->
+            <div th:if="${not #lists.isEmpty(reviews)}">
+                <hr>
+                <h6 class="fw-bold mb-3">리뷰 목록</h6>
+                <div th:each="review : ${reviews}" class="mb-3 pb-3 border-bottom">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="fw-bold" th:text="${review.userId}"></span>
+                        <span class="text-warning" th:text="${review.score} + '★'"></span>
+                    </div>
+                    <p class="mb-0 text-muted" th:if="${review.comment != null and !review.comment.isBlank()}"
+                       th:text="${review.comment}"></p>
+                </div>
+            </div>
+            <div th:if="${#lists.isEmpty(reviews)}" class="text-muted mt-2">
+                아직 작성된 리뷰가 없습니다.
+            </div>
+        </div>
+    </div>
+
+    <!-- AI 도서 요약 -->
+    <div class="card shadow-sm mt-4" th:if="${aiSummary != null}">
+        <div class="card-header fw-bold">AI 도서 요약 <span class="badge bg-secondary ms-1">Beta</span></div>
+        <div class="card-body">
+            <div class="mb-3">
+                <p class="fw-semibold text-primary mb-1">한 줄 추천</p>
+                <p class="mb-0" th:text="${aiSummary.oneLinePitch}"></p>
+            </div>
+            <hr>
+            <div class="mb-3">
+                <p class="fw-semibold text-primary mb-1">AI 요약</p>
+                <p class="mb-0" th:text="${aiSummary.detailedSummary}"></p>
+            </div>
+            <hr>
+            <div class="mb-3">
+                <p class="fw-semibold text-primary mb-1">이런 분께 추천</p>
+                <p class="mb-0" th:text="${aiSummary.targetReader}"></p>
+            </div>
+            <hr>
+            <div>
+                <p class="fw-semibold text-primary mb-1">구매 전 참고 포인트</p>
+                <p class="mb-0" th:text="${aiSummary.purchasePoints}"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 관련 도서 추천 -->
+    <div class="mt-5" th:if="${not #lists.isEmpty(relatedBooks)}">
+        <h5 class="fw-bold mb-3">관련 도서 추천</h5>
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            <div class="col" th:each="related : ${relatedBooks}">
+                <div th:replace="~{content/fragments/bookCard :: bookCard(${related})}"></div>
+            </div>
         </div>
     </div>
 
