@@ -4,8 +4,22 @@
 <body>
 <section>
 
-    <div class="mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <a th:href="@{/books}" class="text-decoration-none text-muted">← 목록으로 돌아가기</a>
+        <div class="d-flex gap-2">
+            <a th:if="${prevBook != null}"
+               th:href="@{/books/{id}(id=${prevBook.bookId})}"
+               class="btn btn-sm btn-outline-secondary"
+               th:title="${prevBook.name}">
+                &lt; 이전
+            </a>
+            <a th:if="${nextBook != null}"
+               th:href="@{/books/{id}(id=${nextBook.bookId})}"
+               class="btn btn-sm btn-outline-secondary"
+               th:title="${nextBook.name}">
+                다음 &gt;
+            </a>
+        </div>
     </div>
 
     <div class="card shadow-sm">
@@ -96,6 +110,42 @@
                 </div><!-- col-md-9 끝 -->
             </div><!-- row 끝 -->
 
+        </div>
+    </div>
+
+    <!-- AI 도서 요약 -->
+    <div class="card shadow-sm mt-4" th:if="${aiSummary != null}">
+        <div class="card-header fw-bold">AI 도서 요약 <span class="badge bg-secondary ms-1">Beta</span></div>
+        <div class="card-body">
+            <div class="mb-3">
+                <p class="fw-semibold text-primary mb-1">한 줄 추천</p>
+                <p class="mb-0" th:text="${aiSummary.oneLinePitch}"></p>
+            </div>
+            <hr>
+            <div class="mb-3">
+                <p class="fw-semibold text-primary mb-1">AI 요약</p>
+                <p class="mb-0" th:text="${aiSummary.detailedSummary}"></p>
+            </div>
+            <hr>
+            <div class="mb-3">
+                <p class="fw-semibold text-primary mb-1">이런 분께 추천</p>
+                <p class="mb-0" th:text="${aiSummary.targetReader}"></p>
+            </div>
+            <hr>
+            <div>
+                <p class="fw-semibold text-primary mb-1">구매 전 참고 포인트</p>
+                <p class="mb-0" th:text="${aiSummary.purchasePoints}"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 관련 도서 추천 -->
+    <div class="mt-5" th:if="${not #lists.isEmpty(relatedBooks)}">
+        <h5 class="fw-bold mb-3">관련 도서 추천</h5>
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            <div class="col" th:each="related : ${relatedBooks}">
+                <div th:replace="~{content/fragments/bookCard :: bookCard(${related})}"></div>
+            </div>
         </div>
     </div>
 
