@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">BookFrame</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto" th:if="${loginRole == 'ADMIN'}">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/books}">도서 관리</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/admin/add}">도서 등록</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ms-auto">
+                    <th:block th:if="${loginUserId == null}">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/member/login}">로그인</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/member/signup}">회원가입</a>
+                        </li>
+                    </th:block>
+
+                    <th:block th:if="${loginUserId != null and loginRole == 'USER'}">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/member/mypage}">마이페이지</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/member/logout}">로그아웃</a>
+                        </li>
+                    </th:block>
+
+                    <th:block th:if="${loginUserId != null and loginRole == 'ADMIN'}">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/admin}">관리자 페이지</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/member/logout}">로그아웃</a>
+                        </li>
+                    </th:block>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+</body>
+</html>

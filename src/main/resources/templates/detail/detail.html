@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{common/layout :: layout(~{::section})}">
+<body>
+<section>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a th:href="@{/books}" class="text-decoration-none text-muted">← 목록으로 돌아가기</a>
+        <div class="d-flex gap-2">
+            <a th:if="${prevBook != null}"
+               th:href="@{/books/{id}(id=${prevBook.bookId})}"
+               class="btn btn-sm btn-outline-secondary"
+               th:title="${prevBook.name}">
+                &lt; 이전
+            </a>
+            <a th:if="${nextBook != null}"
+               th:href="@{/books/{id}(id=${nextBook.bookId})}"
+               class="btn btn-sm btn-outline-secondary"
+               th:title="${nextBook.name}">
+                다음 &gt;
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <div class="alert alert-success" th:if="${param.purchaseSuccess != null}">
+                구매가 완료되었습니다.
+            </div>
+            <div class="alert alert-danger" th:if="${param.purchaseError != null}">
+                구매를 진행할 수 없습니다. 재고를 확인해 주세요.
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3 text-center">
+                    <img th:src="${book.imageUrl}" th:alt="${book.name}"
+                         class="img-fluid rounded shadow-sm" style="max-height: 250px;">
+                </div>
+                <div class="col-md-9">
+
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <h2 class="fw-bold mb-0" th:text="${book.name}">책 제목</h2>
+                <span th:if="${book.condition != null}"
+                      th:text="${book.condition}"
+                      th:class="${book.condition == '신규'} ? 'badge bg-success' : (${book.condition == '중고'} ? 'badge bg-warning text-dark' : 'badge bg-secondary')">
+                </span>
+            </div>
+
+            <p class="text-muted mb-4" th:text="${book.author} + ' 저 | ' + ${book.publisher}">저자 | 출판사</p>
+
+            <hr>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p><strong>카테고리</strong><br><span th:text="${book.category}">카테고리</span></p>
+                    <p><strong>출간일</strong><br><span th:text="${book.releaseDate}">출간일</span></p>
+                    <p><strong>도서 ID</strong><br><span th:text="${book.bookId}">P0000</span></p>
+                    <p><strong>조회수</strong><br><span th:text="${book.viewCount} + '회'">0회</span></p>
+                </div>
+                <div class="col-md-6">
+                    <p>
+                        <strong>가격</strong><br>
+                        <span class="fs-4 fw-bold text-primary" th:text="${book.unitPrice} + '원'">0원</span>
+                    </p>
+                    <p>
+                        <strong>재고 상태</strong><br>
+                        <span th:if="${book.unitsInStock > 0}" class="text-success fw-bold">
+                            재고 있음 (<span th:text="${book.unitsInStock}">0</span>권)
+                        </span>
+                        <span th:if="${book.unitsInStock == 0}" class="text-danger fw-bold">품절</span>
+                    </p>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="mb-4">
+                <strong>책 소개</strong>
+                <p class="mt-2" th:text="${book.description}">책 소개 내용</p>
+            </div>
+
+            <div class="mb-4">
+                <strong>배송 안내</strong>
+                <p class="mt-2 text-muted">주문 후 1~3일 이내 출고됩니다. (도서산간 지역 제외)</p>
+            </div>
+
+            <div class="alert alert-success" th:if="${param.cartSuccess != null}">
+                장바구니에 담았습니다.
+            </div>
+            <div class="alert alert-danger" th:if="${param.cartError != null}">
+                장바구니 담기에 실패했습니다. 재고를 확인해 주세요.
+            </div>
+
+            <div class="d-flex gap-2">
+                <form th:action="@{/member/cart/add/{bookId}(bookId=${book.bookId})}" method="post">
+                    <button type="submit" class="btn btn-outline-primary"
+                            th:disabled="${book.unitsInStock == 0}">
+                        장바구니 담기
+                    </button>
+                </form>
+                <form th:action="@{/member/purchase/{bookId}/start(bookId=${book.bookId})}" method="post">
+                    <button type="submit" class="btn btn-primary"
+                            th:disabled="${book.unitsInStock == 0}">
+                        <span th:if="${book.unitsInStock > 0}">구매하기</span>
+                        <span th:if="${book.unitsInStock == 0}">품절</span>
+                    </button>
+                </form>
+            </div>
+
+                </div><!-- col-md-9 끝 -->
+            </div><!-- row 끝 -->
+
+        </div>
+    </div>
+
+    <!-- AI 도서 요약 -->
+    <div class="card shadow-sm mt-4" th:if="${aiSummary != null}">
+        <div class="card-header fw-bold">AI 도서 요약 <span class="badge bg-secondary ms-1">Beta</span></div>
+        <div class="card-body">
+            <div class="mb-3">
+                <p class="fw-semibold text-primary mb-1">한 줄 추천</p>
+                <p class="mb-0" th:text="${aiSummary.oneLinePitch}"></p>
+            </div>
+            <hr>
+            <div class="mb-3">
+                <p class="fw-semibold text-primary mb-1">AI 요약</p>
+                <p class="mb-0" th:text="${aiSummary.detailedSummary}"></p>
+            </div>
+            <hr>
+            <div class="mb-3">
+                <p class="fw-semibold text-primary mb-1">이런 분께 추천</p>
+                <p class="mb-0" th:text="${aiSummary.targetReader}"></p>
+            </div>
+            <hr>
+            <div>
+                <p class="fw-semibold text-primary mb-1">구매 전 참고 포인트</p>
+                <p class="mb-0" th:text="${aiSummary.purchasePoints}"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 관련 도서 추천 -->
+    <div class="mt-5" th:if="${not #lists.isEmpty(relatedBooks)}">
+        <h5 class="fw-bold mb-3">관련 도서 추천</h5>
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            <div class="col" th:each="related : ${relatedBooks}">
+                <div th:replace="~{content/fragments/bookCard :: bookCard(${related})}"></div>
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

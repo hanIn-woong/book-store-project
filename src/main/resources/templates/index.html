@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::section})}">
+<body>
+<section>
+    <style>
+        .main-page {
+            padding: 1.5rem 0 2.5rem;
+            color: #102033;
+        }
+
+        .hero-card {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(340px, 1.1fr);
+            min-height: 430px;
+            overflow: hidden;
+            border: 1px solid #edf1f6;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 18px 45px rgba(30, 45, 70, 0.10);
+        }
+
+        .hero-copy {
+            padding: 4.5rem;
+            align-self: center;
+        }
+
+        .hero-kicker {
+            color: #2f64f5;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: .03em;
+        }
+
+        .hero-title {
+            margin: .75rem 0 1.25rem;
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 900;
+            line-height: 1;
+            color: #102033;
+        }
+
+        .hero-description {
+            max-width: 520px;
+            color: #5c6a7d;
+            font-size: 1.18rem;
+            line-height: 1.75;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .85rem;
+            margin-top: 2rem;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            min-height: 360px;
+            object-fit: cover;
+        }
+
+        .section-title {
+            margin: 3.5rem 0 2rem;
+            text-align: center;
+            font-weight: 800;
+            color: #102033;
+        }
+
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 48px;
+            height: 2px;
+            margin: 1rem auto 0;
+            background: #2f64f5;
+        }
+
+        .service-card {
+            height: 100%;
+            padding: 2rem;
+            border: 1px solid #edf1f6;
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 0 10px 28px rgba(30, 45, 70, 0.08);
+        }
+
+        .service-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 72px;
+            height: 72px;
+            margin-bottom: 1.25rem;
+            border-radius: 50%;
+            background: #eef4ff;
+            color: #2f64f5;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .service-icon.purchase {
+            background: #ecf9f1;
+            color: #19a65a;
+        }
+
+        .service-icon.account {
+            background: #f3edff;
+            color: #7353d8;
+        }
+
+        .service-card h3 {
+            margin-bottom: .75rem;
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
+
+        .service-card p {
+            margin: 0;
+            color: #647084;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 992px) {
+            .hero-card {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-copy {
+                padding: 3rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-copy {
+                padding: 2rem;
+            }
+
+            .hero-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <div class="main-page">
+        <div class="hero-card">
+            <div class="hero-copy">
+                <div class="hero-kicker">BOOKFRAME</div>
+                <h1 class="hero-title">Book Store</h1>
+                <p class="hero-description">
+                    다양한 도서를 둘러보고, 간편하게 구매하세요.<br>
+                    회원으로 로그인하면 더 많은 혜택을 누릴 수 있습니다.
+                </p>
+
+                <div class="hero-actions" th:if="${loginUserId == null}">
+                    <a th:href="@{/member/id-input}" class="btn btn-primary btn-lg px-4">로그인</a>
+                    <a th:href="@{/member/signup}" class="btn btn-outline-primary btn-lg px-4">회원가입</a>
+                </div>
+
+                <div class="hero-actions" th:if="${loginUserId != null and loginRole == 'USER'}">
+                    <a th:href="@{/member/mypage}" class="btn btn-primary btn-lg px-4">마이페이지</a>
+                    <a th:href="@{/books}" class="btn btn-outline-primary btn-lg px-4">도서 목록 보기</a>
+                </div>
+
+                <div class="hero-actions" th:if="${loginUserId != null and loginRole == 'ADMIN'}">
+                    <a th:href="@{/admin}" class="btn btn-primary btn-lg px-4">관리자 페이지</a>
+                    <a th:href="@{/books}" class="btn btn-outline-primary btn-lg px-4">도서 목록 보기</a>
+                </div>
+            </div>
+
+            <img class="hero-image" th:src="@{/images/main_banner.png}" src="/images/main_banner.png" alt="BookFrame main banner">
+        </div>
+
+        <h2 class="section-title">BookFrame의 다양한 서비스를 만나보세요</h2>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="service-card">
+                    <div class="service-icon">B</div>
+                    <h3>다양한 도서 탐색</h3>
+                    <p>베스트셀러부터 신간까지 원하는 도서를 쉽게 찾아보세요.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-card">
+                    <div class="service-icon purchase">C</div>
+                    <h3>간편한 구매</h3>
+                    <p>원하는 도서를 간편하게 구매할 수 있습니다.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-card">
+                    <div class="service-icon account">M</div>
+                    <h3>나만의 공간</h3>
+                    <p>마이페이지에서 주문 내역과 회원 정보를 관리하세요.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

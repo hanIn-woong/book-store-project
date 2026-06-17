@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{common/layout :: layout(~{::section})}">
+<body>
+<section>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="card-title mb-0">도서 정보 수정</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/admin/update}" th:object="${book}" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="bookId" class="form-label">도서 코드 (ID)</label>
+                                <input type="text" th:field="*{bookId}" class="form-control bg-light" id="bookId" readonly>
+                                <div class="form-text">도서 코드는 수정할 수 없습니다.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">도서명</label>
+                                <input type="text" th:field="*{name}" class="form-control" id="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="unitPrice" class="form-label">가격 (원)</label>
+                                <input type="number" th:field="*{unitPrice}" class="form-control" id="unitPrice" min="0" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="author" class="form-label">저자</label>
+                                <input type="text" th:field="*{author}" class="form-control" id="author" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="publisher" class="form-label">출판사</label>
+                                <input type="text" th:field="*{publisher}" class="form-control" id="publisher">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="category" class="form-label">분류</label>
+                                <select th:field="*{category}" class="form-select" id="category">
+                                    <option value="고전">고전</option>
+                                    <option value="소설">소설</option>
+                                    <option value="판타지">판타지</option>
+                                    <option value="스릴러">스릴러</option>
+                                    <option value="SF">SF</option>
+                                    <option value="모험">모험</option>
+                                    <option value="비소설">비소설</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="unitsInStock" class="form-label">재고 수량</label>
+                                <input type="number" th:field="*{unitsInStock}" class="form-control" id="unitsInStock" min="0" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="releaseDate" class="form-label">출판일</label>
+                                <input type="date" th:field="*{releaseDate}" class="form-control" id="releaseDate">
+                            </div>
+                            <div class="col-md-12">
+                                <label for="imageUrl" class="form-label">이미지 URL</label>
+                                <input type="text" th:field="*{imageUrl}" class="form-control" id="imageUrl" placeholder="예: https://example.com/image.jpg">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">도서 상태</label>
+                                <div class="mt-1">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" th:field="*{condition}" id="condNew" value="신규">
+                                        <label class="form-check-label" for="condNew">신규</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" th:field="*{condition}" id="condOld" value="중고">
+                                        <label class="form-check-label" for="condOld">중고</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" th:field="*{condition}" id="condRefurb" value="재생">
+                                        <label class="form-check-label" for="condRefurb">재생</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label for="description" class="form-label">상세 설명</label>
+                                <textarea th:field="*{description}" class="form-control" id="description" rows="3"></textarea>
+                            </div>
+                            <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+                                <a th:href="@{/admin/books}" class="btn btn-secondary">취소</a>
+                                <button type="submit" class="btn btn-warning">수정 완료</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

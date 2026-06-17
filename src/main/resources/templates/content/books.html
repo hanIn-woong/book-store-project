@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{common/layout :: layout(~{::section})}">
+<body>
+<section>
+
+    <!-- 검색 / 카테고리 / 정렬 -->
+    <form th:action="@{/books}" method="get">
+        <input type="hidden" name="view" th:value="${view}">
+
+        <div class="input-group mb-3">
+            <input type="text" name="keyword" class="form-control"
+                   placeholder="도서명 또는 저자 검색"
+                   th:value="${keyword}">
+            <button class="btn btn-dark" type="submit">검색</button>
+        </div>
+
+        <div class="mb-3">
+            <a th:href="@{/books(keyword=${keyword}, sort=${sort}, view=${view})}"
+               class="btn btn-sm me-1"
+               th:classappend="${category == ''} ? 'btn-dark' : 'btn-outline-dark'">전체</a>
+            <a th:each="cat : ${categories}"
+               th:href="@{/books(keyword=${keyword}, category=${cat}, sort=${sort}, view=${view})}"
+               th:text="${cat}"
+               class="btn btn-sm me-1"
+               th:classappend="${category == cat} ? 'btn-dark' : 'btn-outline-dark'">카테고리</a>
+        </div>
+
+        <select name="sort" class="form-select form-select-sm w-auto mb-3"
+                onchange="this.form.submit()">
+            <option value="default"    th:selected="${sort == 'default'}">기본 (도서명)</option>
+            <option value="price_asc"  th:selected="${sort == 'price_asc'}">가격 낮은순</option>
+            <option value="price_desc" th:selected="${sort == 'price_desc'}">가격 높은순</option>
+            <option value="popular"    th:selected="${sort == 'popular'}">인기순</option>
+            <option value="newest"     th:selected="${sort == 'newest'}">최신순</option>
+        </select>
+    </form>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">도서 목록
+            <small class="text-muted fs-6 ms-2"
+                   th:text="'총 ' + ${#lists.size(books)} + '권'">총 0권</small>
+        </h2>
+
+        <div class="btn-group" role="group" aria-label="도서 목록 보기 방식">
+            <a th:href="@{/books(keyword=${keyword}, category=${category}, sort=${sort}, view='grid')}"
+               class="btn btn-sm"
+               th:classappend="${view == 'grid'} ? 'btn-dark' : 'btn-outline-dark'">그리드</a>
+            <a th:href="@{/books(keyword=${keyword}, category=${category}, sort=${sort}, view='list')}"
+               class="btn btn-sm"
+               th:classappend="${view == 'list'} ? 'btn-dark' : 'btn-outline-dark'">리스트</a>
+        </div>
+    </div>
+
+    <div th:if="${view == 'grid'}" class="row g-4">
+        <div th:each="book : ${books}" class="col-lg-3 col-md-4 col-sm-6">
+            <div th:replace="~{content/fragments/bookCard :: bookCard(${book})}"></div>
+        </div>
+    </div>
+
+    <div th:if="${view == 'list'}" class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+            <tr>
+                <th style="width: 90px;">이미지</th>
+                <th>도서명</th>
+                <th>저자</th>
+                <th>분류</th>
+                <th>배지</th>
+                <th>재고</th>
+                <th>가격</th>
+                <th style="width: 110px;">상세</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book : ${books}">
+                <td>
+                    <img th:if="${book.imageUrl != null and book.imageUrl != ''}"
+                         th:src="${book.imageUrl}"
+                         th:alt="${book.name}"
+                         style="width: 48px; height: 64px; object-fit: contain;">
+                    <span th:unless="${book.imageUrl != null and book.imageUrl != ''}"
+                          class="text-muted small">No Image</span>
+                </td>
+                <td>
+                    <div class="fw-semibold" th:text="${book.name}">도서명</div>
+                    <small class="text-muted" th:text="${book.publisher}">출판사</small>
+                </td>
+                <td class="text-muted" th:text="${book.author}">저자</td>
+                <td><span class="badge bg-secondary" th:text="${book.category}">분류</span></td>
+                <td>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-danger"
+                              th:if="${book.releaseDate != null and book.releaseDate != '' and !T(java.time.LocalDate).parse(book.releaseDate).isBefore(T(java.time.LocalDate).now().minusMonths(1))}">NEW</span>
+                        <span class="badge"
+                              th:classappend="${book.unitsInStock == 0} ? 'bg-danger' : (${book.unitsInStock <= 3} ? 'bg-warning text-dark' : 'bg-success')"
+                              th:text="${book.unitsInStock == 0} ? '품절' : (${book.unitsInStock <= 3} ? '재고 임박' : '재고 있음')">재고 있음</span>
+                        <span class="badge bg-secondary"
+                              th:if="${book.condition == '중고'}">중고</span>
+                    </div>
+                </td>
+                <td th:text="${book.unitsInStock} + '권'">0권</td>
+                <td class="fw-bold text-primary"
+                    th:text="${#numbers.formatDecimal(book.unitPrice, 0, 'COMMA', 0, 'POINT')} + '원'">0원</td>
+                <td>
+                    <a th:href="@{/books/{id}(id=${book.bookId})}"
+                       class="btn btn-outline-dark btn-sm">상세보기</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 0건 처리 -->
+    <div th:if="${#lists.isEmpty(books)}" class="text-center py-5 text-muted">
+        <p th:if="${!#strings.isEmpty(keyword)}"
+           th:text="|'${keyword}' 에 대한 검색 결과가 없습니다.|"></p>
+        <p th:if="${#strings.isEmpty(keyword)}">해당 카테고리에 도서가 없습니다.</p>
+    </div>
+
+</section>
+</body>
+</html>
