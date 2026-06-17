@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>&#51109;&#48148;&#44396;&#45768; &#44208;&#51228;</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, "Malgun Gothic", sans-serif;
+            background: #f8fafc;
+            color: #111827;
+        }
+        .site-nav {
+            position: fixed;
+            top: 28px;
+            left: 36px;
+            display: flex;
+            gap: 28px;
+            z-index: 10;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .site-nav a { color: #26324a; text-decoration: none; }
+        .hero {
+            padding: 28px 24px 24px;
+            text-align: center;
+            background: #ffffff;
+            border-bottom: 1px solid #dde4ee;
+        }
+        .brand-logo {
+            margin: 0;
+            color: #26324a;
+            font-size: 64px;
+            font-weight: 900;
+            letter-spacing: 0;
+        }
+        .brand-subtitle {
+            margin: 12px 0 0;
+            color: #5c667a;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .payment-page {
+            max-width: 1080px;
+            margin: 42px auto 80px;
+            padding: 0 28px;
+        }
+        .page-title {
+            margin: 0 0 24px;
+            font-size: 32px;
+            font-weight: 900;
+        }
+        .payment-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 330px;
+            gap: 28px;
+            align-items: start;
+        }
+        .item-panel,
+        .payment-panel {
+            border: 1px solid #dde4ee;
+            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: 0 10px 24px rgba(38, 50, 74, 0.06);
+        }
+        .item-panel {
+            padding: 26px 28px;
+        }
+        .cart-item {
+            display: grid;
+            grid-template-columns: 76px minmax(0, 1fr) 120px;
+            gap: 18px;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid #eef2f7;
+        }
+        .cart-item:first-child { padding-top: 0; }
+        .cart-item:last-child { border-bottom: 0; padding-bottom: 0; }
+        .book-cover {
+            width: 76px;
+            height: 108px;
+            object-fit: contain;
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .book-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 76px;
+            height: 108px;
+            background: #eef2f7;
+            color: #64748b;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .book-title {
+            margin: 0 0 8px;
+            font-size: 18px;
+            font-weight: 900;
+            line-height: 1.4;
+        }
+        .book-meta {
+            margin: 0;
+            color: #64748b;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .line-price {
+            text-align: right;
+            font-size: 17px;
+            font-weight: 900;
+        }
+        .payment-panel {
+            padding: 28px 24px;
+        }
+        .total-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            font-size: 22px;
+            font-weight: 900;
+        }
+        .total-price {
+            font-size: 26px;
+        }
+        .payment-button {
+            width: 100%;
+            height: 54px;
+            margin-top: 10px;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+        .payment-button.card {
+            border: 0;
+            background: #4f46e5;
+            color: #ffffff;
+        }
+        .payment-button.bank {
+            border: 1px solid #4f46e5;
+            background: #ffffff;
+            color: #4f46e5;
+        }
+        .back-link {
+            display: block;
+            margin-top: 14px;
+            color: #64748b;
+            font-weight: 800;
+            text-align: center;
+            text-decoration: none;
+        }
+        .error-message {
+            margin: 0 0 16px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: #fff1f2;
+            color: #be123c;
+            font-weight: 800;
+        }
+        @media (max-width: 900px) {
+            .brand-logo { font-size: 48px; }
+            .payment-layout,
+            .cart-item {
+                grid-template-columns: 1fr;
+            }
+            .line-price { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+<nav class="site-nav">
+    <a th:href="@{/}">&#54856;</a>
+    <a th:href="@{/member/cart}">&#51109;&#48148;&#44396;&#45768;</a>
+</nav>
+
+<header class="hero">
+    <h1 class="brand-logo">BookFrame</h1>
+    <p class="brand-subtitle">&#46020;&#49436; &#44396;&#47588; &#49324;&#51060;&#53944;</p>
+</header>
+
+<main class="payment-page">
+    <h2 class="page-title">&#44208;&#51228; &#49688;&#45800; &#49440;&#53469;</h2>
+
+    <p class="error-message" th:if="${error}" th:text="${error}"></p>
+
+    <div class="payment-layout">
+        <section class="item-panel">
+            <article class="cart-item" th:each="item : ${cartItems}">
+                <img class="book-cover"
+                     th:if="${item.imageUrl != null and item.imageUrl != ''}"
+                     th:src="${item.imageUrl}"
+                     th:alt="${item.bookName}">
+                <div class="book-placeholder" th:unless="${item.imageUrl != null and item.imageUrl != ''}">
+                    No Image
+                </div>
+                <div>
+                    <p class="book-title" th:text="${item.bookName}">&#52293; &#51228;&#47785;</p>
+                    <p class="book-meta">
+                        <span th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + '&#50896;'">0&#50896;</span>
+                        <span> x </span>
+                        <span th:text="${item.quantity}">1</span>
+                    </p>
+                </div>
+                <div class="line-price"
+                     th:text="${#numbers.formatDecimal(item.unitPrice * item.quantity, 0, 'COMMA', 0, 'POINT')} + '&#50896;'">
+                    0&#50896;
+                </div>
+            </article>
+        </section>
+
+        <aside class="payment-panel">
+            <div class="total-line">
+                <span>&#52509; &#44552;&#50529;</span>
+                <strong class="total-price"
+                        th:text="${#numbers.formatDecimal(cartTotal, 0, 'COMMA', 0, 'POINT')} + '&#50896;'">0&#50896;</strong>
+            </div>
+
+            <form th:action="@{/member/cart/complete}" method="post">
+                <input type="hidden" name="paymentMethod" value="CARD">
+                <button type="submit" class="payment-button card">&#52852;&#46300; &#44208;&#51228;</button>
+            </form>
+
+            <form th:action="@{/member/cart/complete}" method="post">
+                <input type="hidden" name="paymentMethod" value="BANK">
+                <button type="submit" class="payment-button bank">&#47924;&#53685;&#51109; &#51077;&#44552;</button>
+            </form>
+
+            <a class="back-link" th:href="@{/member/cart}">&#51109;&#48148;&#44396;&#45768;&#47196; &#46028;&#50500;&#44032;&#44592;</a>
+        </aside>
+    </div>
+</main>
+</body>
+</html>
