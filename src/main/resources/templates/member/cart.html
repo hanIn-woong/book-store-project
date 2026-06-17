@@ -291,7 +291,7 @@
                 <strong class="summary-total"
                         th:text="${#numbers.formatDecimal(cartTotal, 0, 'COMMA', 0, 'POINT')} + '&#50896;'">0&#50896;</strong>
             </div>
-            <form th:action="@{/member/cart/purchase}" method="post">
+            <form th:action="@{/member/cart/payment}" method="get">
                 <button type="submit"
                         class="buy-button"
                         th:disabled="${#lists.isEmpty(cartItems)}">

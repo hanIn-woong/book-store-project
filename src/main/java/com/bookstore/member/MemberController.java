@@ -124,8 +124,8 @@ public class MemberController {
         return "member/cart";
     }
 
-    @PostMapping("/cart/purchase")
-    public String purchaseCart(HttpSession session) {
+    @GetMapping("/cart/payment")
+    public String cartPayment(Model model, HttpSession session) {
         String userId = SessionUtils.getLoginUserId(session);
         if (userId == null) {
             return "redirect:/member/id-input";
@@ -134,6 +134,40 @@ public class MemberController {
         List<CartItem> cartItems = memberService.findCartItemsByUserId(userId);
         if (cartItems.isEmpty()) {
             return "redirect:/member/cart?cartError=empty";
+        }
+
+        boolean allAvailable = cartItems.stream()
+                .allMatch(item -> adminService.isStockAvailable(item.getBookId(), item.getQuantity()));
+        if (!allAvailable) {
+            return "redirect:/member/cart?cartError=outOfStock";
+        }
+
+        model.addAttribute("cartItems", cartItems);
+        model.addAttribute("cartTotal", memberService.calculateCartTotal(userId));
+        return "member/cart-payment";
+    }
+
+    @PostMapping("/cart/complete")
+    public String completeCartPurchase(
+            @RequestParam(required = false) String paymentMethod,
+            HttpSession session,
+            Model model
+    ) {
+        String userId = SessionUtils.getLoginUserId(session);
+        if (userId == null) {
+            return "redirect:/member/id-input";
+        }
+
+        List<CartItem> cartItems = memberService.findCartItemsByUserId(userId);
+        if (cartItems.isEmpty()) {
+            return "redirect:/member/cart?cartError=empty";
+        }
+
+        if (!isValidPaymentMethod(paymentMethod)) {
+            model.addAttribute("cartItems", cartItems);
+            model.addAttribute("cartTotal", memberService.calculateCartTotal(userId));
+            model.addAttribute("error", "결제 수단을 다시 선택해 주세요.");
+            return "member/cart-payment";
         }
 
         boolean allAvailable = cartItems.stream()
@@ -152,6 +186,14 @@ public class MemberController {
         }
 
         return "redirect:/member/cart?cartSuccess=true";
+    }
+
+    @PostMapping("/cart/purchase")
+    public String purchaseCart(HttpSession session) {
+        if (SessionUtils.getLoginUserId(session) == null) {
+            return "redirect:/member/id-input";
+        }
+        return "redirect:/member/cart/payment";
     }
 
     @GetMapping("/withdraw")
@@ -239,5 +281,9 @@ public class MemberController {
                 && redirectUrl.startsWith("/member/purchase/")
                 && !redirectUrl.contains("\r")
                 && !redirectUrl.contains("\n");
+    }
+
+    private boolean isValidPaymentMethod(String paymentMethod) {
+        return "CARD".equals(paymentMethod) || "BANK".equals(paymentMethod);
     }
 }

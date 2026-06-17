@@ -59,21 +59,10 @@ public class MemberService {
                 .toList();
     }
 
-    public List<CartItem> findCartItemsByUserId(String userId) {
-        return bookDatabase.getCartList().stream()
-                .filter(cartItem -> cartItem.getUserId().equals(userId))
-                .toList();
-    }
 
-    public int calculateCartTotal(String userId) {
-        return findCartItemsByUserId(userId).stream()
-                .mapToInt(cartItem -> cartItem.getUnitPrice() * cartItem.getQuantity())
-                .sum();
-    }
 
-    public void clearCart(String userId) {
-        bookDatabase.clearCart(userId);
-    }
+
+
 
     public List<PurchaseHistoryItem> findRecentPurchaseItemsByUserId(String userId) {
         return findPurchasesByUserId(userId).stream()
